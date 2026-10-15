@@ -10,6 +10,7 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   use a clean Vercel URL, add the same path to `vercel.json`.
 - The layout measurements in `src/styles.css` reproduce the current temporary
   reference design. Edit that file only when you want to change the design.
+- The circular home-page photo lives at `public/images/profile.jpg`.
 - The browser tab icon lives at `public/favicon.ico`.
 
 ## Development

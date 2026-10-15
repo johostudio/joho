@@ -58,13 +58,19 @@ nav ul {
 }
 
 .simple-link,
-.simple-link:visited {
+.simple-link:visited,
+.home-header a,
+.home-header a:visited,
+.content-section a,
+.content-section a:visited {
   color: #09090b;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-.simple-link:focus-visible {
+.simple-link:focus-visible,
+.home-header a:focus-visible,
+.content-section a:focus-visible {
   outline: 1px solid #09090b;
   outline-offset: 3px;
 }
