@@ -4,8 +4,14 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
 
 ## Editing the site
 
-- Change the name, introduction, navigation, profile image, section lists,
-  footer links, and every secondary-page message in `src/content.js`.
+- Open `/edit` on the deployed site for a live Markdown editor and preview.
+  Publishing requires a fine-grained GitHub token limited to this repository
+  with `Contents: read and write`; the token is held only in the current tab.
+- The editable homepage copy is stored in `content/site.md`. Use headings for
+  sections, hyphens for list items, and `[label](https://example.com)` for
+  inline links. Publishing from `/edit` commits this file to `main`, which
+  triggers the Vercel deployment.
+- Navigation and unfinished-page messages remain in `src/content.js`.
 - Add another page by copying one object in the `navigation` list. If it should
   use a clean Vercel URL, add the same path to `vercel.json`.
 - The layout measurements in `src/styles.css` reproduce the current temporary
