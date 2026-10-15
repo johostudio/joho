@@ -4,30 +4,34 @@ import { renderNavigation } from "./view.js";
 import "./nodes.css";
 
 function renderNode(node) {
+  const readableTitle = node.title.replace(".", "");
+
   return `
     <a
-      class="map-node"
+      class="graph-node"
       data-node-id="${escapeHtml(node.id)}"
       href="${escapeHtml(safeHref(node.href))}"
-      aria-label="Open ${escapeHtml(node.title.replace(".", ""))} page"
+      aria-label="Open ${escapeHtml(readableTitle)}: ${escapeHtml(node.preview)}"
+      draggable="false"
     >
-      <span class="map-node-title">${escapeHtml(node.title)}</span>
-      <span class="map-node-detail">${escapeHtml(node.detail)}</span>
+      <span class="graph-node-dot" aria-hidden="true"></span>
+      <span class="graph-node-label" aria-hidden="true">${escapeHtml(node.title)}</span>
+      <span class="node-preview" aria-hidden="true">
+        <span class="node-preview-type">page</span>
+        <strong>${escapeHtml(node.title)}</strong>
+        <span class="node-preview-copy">${escapeHtml(node.preview)}</span>
+        <span class="node-preview-open">click to open →</span>
+      </span>
     </a>
   `;
 }
 
 function renderEdges() {
-  const byId = new Map(nodesContent.nodes.map((node) => [node.id, node]));
-
   return nodesContent.edges
-    .map(([from, to]) => {
-      const start = byId.get(from);
-      const end = byId.get(to);
-      if (!start || !end) return "";
-
-      return `<line data-from="${escapeHtml(from)}" data-to="${escapeHtml(to)}" x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" />`;
-    })
+    .map(
+      ([from, to]) =>
+        `<line data-from="${escapeHtml(from)}" data-to="${escapeHtml(to)}" />`,
+    )
     .join("");
 }
 
@@ -40,8 +44,8 @@ export function mountNodes(app, siteContent) {
 
       <p class="nodes-status">${escapeHtml(nodesContent.status)}</p>
 
-      <section class="nodes-canvas" aria-label="In-progress node diagram">
-        <svg class="nodes-edges" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <section class="nodes-canvas" aria-label="Interactive in-progress node diagram">
+        <svg class="nodes-edges" aria-hidden="true">
           ${renderEdges()}
         </svg>
         ${nodesContent.nodes.map(renderNode).join("")}
@@ -49,8 +53,70 @@ export function mountNodes(app, siteContent) {
     </main>
   `;
 
-  const nodeElements = [...app.querySelectorAll(".map-node")];
+  const canvas = app.querySelector(".nodes-canvas");
+  const edgeSvg = app.querySelector(".nodes-edges");
+  const nodeElements = [...app.querySelectorAll(".graph-node")];
   const edgeElements = [...app.querySelectorAll(".nodes-edges line")];
+  const state = new Map();
+  let canvasWidth = 0;
+  let canvasHeight = 0;
+
+  const updateGraph = () => {
+    nodeElements.forEach((element) => {
+      const nodeState = state.get(element.dataset.nodeId);
+      if (!nodeState) return;
+
+      element.style.left = `${nodeState.x}px`;
+      element.style.top = `${nodeState.y}px`;
+    });
+
+    edgeElements.forEach((edge) => {
+      const start = state.get(edge.dataset.from);
+      const end = state.get(edge.dataset.to);
+      if (!start || !end) return;
+
+      edge.setAttribute("x1", start.x);
+      edge.setAttribute("y1", start.y);
+      edge.setAttribute("x2", end.x);
+      edge.setAttribute("y2", end.y);
+    });
+  };
+
+  const layoutGraph = () => {
+    const bounds = canvas.getBoundingClientRect();
+    const previousWidth = canvasWidth;
+    const previousHeight = canvasHeight;
+    canvasWidth = bounds.width;
+    canvasHeight = bounds.height;
+    edgeSvg.setAttribute("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`);
+
+    nodesContent.nodes.forEach((node) => {
+      const existing = state.get(node.id);
+
+      if (existing && previousWidth && previousHeight) {
+        existing.x = (existing.x / previousWidth) * canvasWidth;
+        existing.y = (existing.y / previousHeight) * canvasHeight;
+      } else {
+        state.set(node.id, {
+          x: (node.x / 100) * canvasWidth,
+          y: (node.y / 100) * canvasHeight,
+          moved: false,
+          blockClick: false,
+        });
+      }
+    });
+
+    updateGraph();
+    canvas.dataset.ready = "true";
+  };
+
+  const setActiveNode = (id) => {
+    edgeElements.forEach((edge) => {
+      edge.dataset.active = String(
+        Boolean(id && [edge.dataset.from, edge.dataset.to].includes(id)),
+      );
+    });
+  };
 
   nodeElements.forEach((element) => {
     const node = nodesContent.nodes.find(
@@ -58,20 +124,92 @@ export function mountNodes(app, siteContent) {
     );
     if (!node) return;
 
-    element.style.left = `${node.x}%`;
-    element.style.top = `${node.y}%`;
+    element.style.setProperty("--node-size", `${node.size}px`);
+    let pointerId = null;
+    let startClientX = 0;
+    let startClientY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
 
-    const setActive = (active) => {
-      edgeElements.forEach((edge) => {
-        edge.dataset.active = String(
-          active && [edge.dataset.from, edge.dataset.to].includes(node.id),
-        );
-      });
+    element.addEventListener("pointerenter", () =>
+      setActiveNode(element.dataset.nodeId),
+    );
+    element.addEventListener("pointerleave", () => {
+      if (pointerId === null) setActiveNode(null);
+    });
+    element.addEventListener("focus", () =>
+      setActiveNode(element.dataset.nodeId),
+    );
+    element.addEventListener("blur", () => setActiveNode(null));
+    element.addEventListener("dragstart", (event) => event.preventDefault());
+
+    element.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+
+      const nodeState = state.get(element.dataset.nodeId);
+      const bounds = canvas.getBoundingClientRect();
+      if (!nodeState) return;
+
+      pointerId = event.pointerId;
+      startClientX = event.clientX;
+      startClientY = event.clientY;
+      offsetX = event.clientX - bounds.left - nodeState.x;
+      offsetY = event.clientY - bounds.top - nodeState.y;
+      nodeState.moved = false;
+      element.dataset.dragging = "true";
+      element.setPointerCapture(pointerId);
+      setActiveNode(element.dataset.nodeId);
+    });
+
+    element.addEventListener("pointermove", (event) => {
+      if (event.pointerId !== pointerId) return;
+
+      const nodeState = state.get(element.dataset.nodeId);
+      const bounds = canvas.getBoundingClientRect();
+      if (!nodeState) return;
+
+      if (
+        Math.hypot(event.clientX - startClientX, event.clientY - startClientY) >
+        4
+      ) {
+        nodeState.moved = true;
+      }
+
+      const padding = Math.max(24, node.size);
+      nodeState.x = Math.min(
+        canvasWidth - padding,
+        Math.max(padding, event.clientX - bounds.left - offsetX),
+      );
+      nodeState.y = Math.min(
+        canvasHeight - padding,
+        Math.max(padding, event.clientY - bounds.top - offsetY),
+      );
+      updateGraph();
+    });
+
+    const finishDrag = (event) => {
+      if (event.pointerId !== pointerId) return;
+
+      const nodeState = state.get(element.dataset.nodeId);
+      if (nodeState) nodeState.blockClick = nodeState.moved;
+      element.releasePointerCapture(pointerId);
+      pointerId = null;
+      delete element.dataset.dragging;
+      setActiveNode(null);
     };
 
-    element.addEventListener("pointerenter", () => setActive(true));
-    element.addEventListener("pointerleave", () => setActive(false));
-    element.addEventListener("focus", () => setActive(true));
-    element.addEventListener("blur", () => setActive(false));
+    element.addEventListener("pointerup", finishDrag);
+    element.addEventListener("pointercancel", finishDrag);
+    element.addEventListener("click", (event) => {
+      const nodeState = state.get(element.dataset.nodeId);
+      if (!nodeState?.blockClick) return;
+
+      event.preventDefault();
+      nodeState.blockClick = false;
+    });
   });
+
+  const resizeObserver = new ResizeObserver(layoutGraph);
+  resizeObserver.observe(canvas);
+  requestAnimationFrame(layoutGraph);
 }
