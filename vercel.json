@@ -24,6 +24,7 @@
     { "source": "/engineering", "destination": "/index.html" },
     { "source": "/design", "destination": "/index.html" },
     { "source": "/multimedia", "destination": "/index.html" },
+    { "source": "/nodes", "destination": "/index.html" },
     { "source": "/life", "destination": "/index.html" }
   ]
 }

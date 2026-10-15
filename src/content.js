@@ -5,6 +5,7 @@ const navigation = [
   { id: "engineering", label: "engineering", path: "/engineering" },
   { id: "design", label: "design", path: "/design" },
   { id: "multimedia", label: "multimedia", path: "/multimedia" },
+  { id: "nodes", label: "nodes", path: "/nodes" },
   { id: "life", label: "life.", path: "/life" },
 ];
 
@@ -22,6 +23,7 @@ const defaults = {
   title: "Johnny Ho",
   profileImage: "/images/profile.jpg",
   profileImageAlt: "Johnny Ho's profile image",
+  profileImageCaption: "my little corner of the world :)",
 };
 
 export { siteMarkdown };
@@ -167,6 +169,8 @@ export function parsePortfolioMarkdown(source) {
       introduction: introLines.join("\n").trim(),
       profileImage: safeHref(metadata.profileImage || defaults.profileImage),
       profileImageAlt: metadata.profileImageAlt || defaults.profileImageAlt,
+      profileImageCaption:
+        metadata.profileImageCaption || defaults.profileImageCaption,
       sections,
     },
     pageMessages: {

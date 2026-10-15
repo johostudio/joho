@@ -10,6 +10,11 @@ const currentPath = window.location.pathname.replace(/\/$/, "") || "/";
 if (currentPath === "/edit") {
   const { mountEditor } = await import("./editor.js");
   mountEditor(app);
+} else if (currentPath === "/nodes") {
+  const { mountNodes } = await import("./nodes.js");
+  document.title = `nodes — ${siteContent.siteName}`;
+  metaDescription?.setAttribute("content", siteContent.description);
+  mountNodes(app, siteContent);
 } else {
   const currentPage =
     siteContent.navigation.find((page) => page.path === currentPath) ??

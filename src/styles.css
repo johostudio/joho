@@ -108,14 +108,46 @@ h1 {
   white-space: pre-line;
 }
 
-.profile-image {
+.profile-figure {
+  position: relative;
   display: none;
   width: 132px;
-  height: 132px;
   flex: none;
+  margin: 0;
+  padding-bottom: 24px;
+  outline: none;
+}
+
+.profile-image {
+  display: block;
+  width: 132px;
+  height: 132px;
   border-radius: 50%;
   object-fit: cover;
   image-rendering: auto;
+}
+
+.profile-figure figcaption {
+  position: absolute;
+  top: 140px;
+  right: -24px;
+  left: -24px;
+  color: #52525b;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+  pointer-events: none;
+}
+
+.profile-figure:hover figcaption,
+.profile-figure:focus-visible figcaption {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .content-section {
@@ -168,7 +200,13 @@ footer {
     min-height: 156px;
   }
 
-  .profile-image {
+  .profile-figure {
     display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-figure figcaption {
+    transition: none;
   }
 }

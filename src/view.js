@@ -1,20 +1,39 @@
 import { escapeHtml, renderInlineMarkdown, safeHref } from "./content.js";
 
-export function renderPortfolio(siteContent, currentPage) {
-  const navigation = siteContent.navigation
-    .map(
-      (page) => `
+export function renderNavigation(siteContent, currentPageId) {
+  return `
+    <nav aria-label="Primary navigation">
+      <ul>
+        ${siteContent.navigation
+          .map(
+            (page) => `
         <li>
           <a
             class="simple-link"
             href="${escapeHtml(safeHref(page.path))}"
-            ${page.id === currentPage.id ? 'aria-current="page"' : ""}
+            ${page.id === currentPageId ? 'aria-current="page"' : ""}
           >${escapeHtml(page.label)}</a>
         </li>
       `,
+          )
+          .join("")}
+      </ul>
+    </nav>
+  `;
+}
+
+export function renderFooter(siteContent) {
+  const footerLinks = siteContent.footerLinks
+    .map(
+      (link) =>
+        `<a class="simple-link" href="${escapeHtml(safeHref(link.href))}">${escapeHtml(link.label)}</a>`,
     )
     .join("");
 
+  return `<footer>${footerLinks}</footer>`;
+}
+
+export function renderPortfolio(siteContent, currentPage) {
   const homeSections = siteContent.home.sections
     .map(
       (section) => `
@@ -36,11 +55,14 @@ export function renderPortfolio(siteContent, currentPage) {
         <h1>${escapeHtml(siteContent.home.title)}</h1>
         <p>${renderInlineMarkdown(siteContent.home.introduction)}</p>
       </div>
-      <img
-        class="profile-image"
-        src="${escapeHtml(safeHref(siteContent.home.profileImage))}"
-        alt="${escapeHtml(siteContent.home.profileImageAlt)}"
-      />
+      <figure class="profile-figure" tabindex="0">
+        <img
+          class="profile-image"
+          src="${escapeHtml(safeHref(siteContent.home.profileImage))}"
+          alt="${escapeHtml(siteContent.home.profileImageAlt)}"
+        />
+        <figcaption>${renderInlineMarkdown(siteContent.home.profileImageCaption)}</figcaption>
+      </figure>
     </header>
     ${homeSections}
   `;
@@ -52,22 +74,13 @@ export function renderPortfolio(siteContent, currentPage) {
     </section>
   `;
 
-  const footerLinks = siteContent.footerLinks
-    .map(
-      (link) =>
-        `<a class="simple-link" href="${escapeHtml(safeHref(link.href))}">${escapeHtml(link.label)}</a>`,
-    )
-    .join("");
-
   return `
     <main class="site-shell">
-      <nav aria-label="Primary navigation">
-        <ul>${navigation}</ul>
-      </nav>
+      ${renderNavigation(siteContent, currentPage.id)}
 
       ${currentPage.id === "home" ? homeContent : secondaryContent}
 
-      <footer>${footerLinks}</footer>
+      ${renderFooter(siteContent)}
     </main>
   `;
 }

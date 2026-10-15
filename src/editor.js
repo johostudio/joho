@@ -36,12 +36,7 @@ export function mountEditor(app) {
     <main class="editor-shell">
       <header class="editor-header">
         <div>
-          <p class="editor-eyebrow">johnnyho.ca / content</p>
-          <h1>Make it yours.</h1>
-          <p class="editor-lede">
-            Edit the page as Markdown, preview it live, then publish a normal
-            GitHub commit. Links use <code>[label](https://example.com)</code>.
-          </p>
+          <h1>Content</h1>
         </div>
         <a class="editor-site-link" href="/">view site ↗</a>
       </header>
@@ -50,7 +45,6 @@ export function mountEditor(app) {
         <section class="editor-card editor-compose" aria-labelledby="compose-title">
           <div class="editor-card-header">
             <div>
-              <p class="editor-step">01 / write</p>
               <h2 id="compose-title">Portfolio content</h2>
             </div>
             <span class="editor-draft-state" data-dirty="false">live copy</span>
@@ -62,22 +56,13 @@ export function mountEditor(app) {
             spellcheck="true"
           >${escapeHtml(siteMarkdown)}</textarea>
 
-          <div class="editor-syntax" aria-label="Supported Markdown syntax">
-            <span><code>## heading</code></span>
-            <span><code>- list item</code></span>
-            <span><code>[text](url)</code></span>
-            <span><code>**bold**</code></span>
-            <span><code>_italic_</code></span>
-          </div>
         </section>
 
         <section class="editor-card editor-preview-card" aria-labelledby="preview-title">
           <div class="editor-card-header">
             <div>
-              <p class="editor-step">02 / check</p>
               <h2 id="preview-title">Live preview</h2>
             </div>
-            <span class="editor-preview-label">links disabled here</span>
           </div>
           <div class="editor-preview" aria-live="polite"></div>
         </section>
@@ -85,13 +70,7 @@ export function mountEditor(app) {
 
       <section class="editor-card editor-publish" aria-labelledby="publish-title">
         <div class="editor-publish-copy">
-          <p class="editor-step">03 / publish</p>
           <h2 id="publish-title">Send it live</h2>
-          <p>
-            Use a fine-grained GitHub token limited to
-            <strong>${repository}</strong> with <strong>Contents: read and write</strong>.
-            The token stays in this tab and is never saved by the site.
-          </p>
           <div class="editor-help-links">
             <a href="${tokenUrl}" target="_blank" rel="noreferrer">create token ↗</a>
             <a href="${githubEditUrl}" target="_blank" rel="noreferrer">edit directly on GitHub ↗</a>
@@ -108,9 +87,7 @@ export function mountEditor(app) {
             placeholder="github_pat_…"
           />
           <button type="submit">publish changes</button>
-          <p class="editor-status" role="status" data-tone="neutral">
-            Publishing commits to main; Vercel deploys it automatically.
-          </p>
+          <p class="editor-status" role="status" data-tone="neutral"></p>
         </form>
       </section>
     </main>
