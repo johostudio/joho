@@ -13,7 +13,7 @@ lifePage: to be developed and designed soon :)
 
 "failure runs through life, this is life"
 
-- 王可晴 (Wang Ke-Ching)
+- 王可晴 (Wang Ke Ching, 'Clem')
 
 ## about
 
@@ -24,12 +24,12 @@ lifePage: to be developed and designed soon :)
 
 ## what i've done
 
-- task analysis design team @ [sfu genesis](https://www.instagram.com/sfu_genesis/), working on develop our human powered rover for NASA's HERC comp in alabama next spring
-- vp media+design, and creative lead @ [the forum ent.](https://www.instagram.com/theforumsfu/), working on a rebrand and curated content promoted to thousands of students
+- task analysis design team @ [sfu genesis](https://www.instagram.com/sfu_genesis/), working on developing our human powered rover for NASA's HERC comp in alabama next spring
+- vp media+design, and creative lead @ [the forum ent.](https://www.instagram.com/theforumsfu/), working on a rebrand. curated content promoted to thousands of students, and hosting really big events
 - engineering design with [nextspark at enactus sfu](https://www.enactussfu.ca/projects), teaching next generation of stem students and designing applicable kits for classrooms
 - mechanical + electrical with [engineers without borders sfu](https://www.ewb.ca/en/) projects, electrical design and cad prototypes
 - director of media at [caseit sfu](https://www.caseit.org/), working on developing a strong media identity for caseit week 2027
-- previous experience with [subvision](https://subvision.ca/) (electrical planning) and [fraser basin council’s ccsbc](https://fbcyouthprogram.ca/ccsbc/) (community-based sustainability workshops and research)
+- previous experience with [subvision](https://subvision.ca/) (electrical planning), [fraser basin council’s ccsbc](https://fbcyouthprogram.ca/ccsbc/) (community-based sustainability workshops and research), and [student energy @ sfu](https://www.studentenergysfu.org/) (website dev + sustainability event planning)
 
 ## what's next
 
