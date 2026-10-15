@@ -130,24 +130,31 @@ h1 {
 .profile-figure figcaption {
   position: absolute;
   top: calc(var(--profile-size) + 8px);
-  right: -24px;
-  left: -24px;
+  right: 0;
+  width: min(184px, calc(100vw - 48px));
   color: #52525b;
   font-size: 11px;
   line-height: 16px;
-  text-align: center;
+  text-align: right;
+  white-space: normal;
+  overflow-wrap: break-word;
+  visibility: hidden;
   opacity: 0;
   transform: translateY(-3px);
   transition:
     opacity 160ms ease,
-    transform 160ms ease;
+    transform 160ms ease,
+    visibility 0s linear 160ms;
   pointer-events: none;
 }
 
 .profile-figure:hover figcaption,
 .profile-figure:focus figcaption {
+  visibility: visible;
   opacity: 1;
   transform: translateY(0);
+  transition-delay: 0s;
+  pointer-events: auto;
 }
 
 .content-section {
@@ -216,6 +223,12 @@ footer {
 
   .profile-figure {
     --profile-size: 132px;
+  }
+
+  .profile-figure figcaption {
+    right: -44px;
+    width: 220px;
+    text-align: center;
   }
 }
 

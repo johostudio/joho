@@ -23,7 +23,8 @@ const defaults = {
   title: "Johnny Ho",
   profileImage: "/images/profile.jpg",
   profileImageAlt: "Johnny Ho's profile image",
-  profileImageCaption: "my little corner of the world :)",
+  profileImageCaption:
+    "my desk when i turned 20. now playing: [luke chiang](https://open.spotify.com/album/53SL5EIuJdUG7EBF6u2rdv)",
 };
 
 export { siteMarkdown };
