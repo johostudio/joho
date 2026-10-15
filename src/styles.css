@@ -1,0 +1,192 @@
+:root {
+  color: #202936;
+  background: #f8fafb;
+  font-family: "Helvetica Neue", "Nimbus Sans L", Helvetica, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #202936;
+  --muted: #718096;
+  --paper: #f8fafb;
+  --accent: #c86d4a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 5% 88%,
+      rgb(196 211 227 / 24%),
+      transparent 13rem
+    ),
+    linear-gradient(112deg, #fbfcfd 0%, var(--paper) 62%, #f5f8fa 100%);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 100svh;
+  padding: clamp(1.5rem, 3.2vw, 4rem);
+  align-items: center;
+}
+
+.hero::after {
+  position: absolute;
+  top: 0;
+  right: clamp(2rem, 8vw, 8rem);
+  width: 0.28rem;
+  height: clamp(2.5rem, 7vh, 4.5rem);
+  content: "";
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.hero__copy {
+  width: min(54rem, 88vw);
+  transform: translateY(-1vh);
+}
+
+.hero__eyebrow,
+.hero__intro,
+.hero__meta,
+.hero__status,
+h1 {
+  margin: 0;
+}
+
+.hero__eyebrow {
+  margin-bottom: 0.65rem;
+  font-size: clamp(0.95rem, 1.25vw, 1.2rem);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  font-size: clamp(5.25rem, 12vw, 10.5rem);
+  font-weight: 300;
+  line-height: 0.88;
+  letter-spacing: -0.075em;
+}
+
+h1 span {
+  color: var(--accent);
+}
+
+.hero__intro {
+  margin-top: clamp(1.3rem, 3vw, 2.35rem);
+  font-size: clamp(1.25rem, 2.3vw, 2.15rem);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+
+.hero__meta,
+.hero__status {
+  color: var(--muted);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: clamp(0.68rem, 0.85vw, 0.82rem);
+  letter-spacing: 0.02em;
+}
+
+.hero__meta {
+  margin-top: clamp(1.2rem, 2.4vw, 1.8rem);
+}
+
+.hero__status {
+  position: absolute;
+  right: clamp(1.5rem, 3.2vw, 4rem);
+  bottom: clamp(1.5rem, 3.2vw, 4rem);
+  writing-mode: vertical-rl;
+}
+
+.is-ready .hero__copy > * {
+  opacity: 0;
+  animation: reveal 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.is-ready .hero__copy > :nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.is-ready .hero__copy > :nth-child(3) {
+  animation-delay: 160ms;
+}
+
+.is-ready .hero__copy > :nth-child(4) {
+  animation-delay: 240ms;
+}
+
+.is-ready .hero::after {
+  animation: draw-line 650ms 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes draw-line {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    align-items: end;
+    padding-bottom: 20vh;
+  }
+
+  .hero__copy {
+    width: 100%;
+  }
+
+  .hero__intro {
+    max-width: 17rem;
+    line-height: 1.15;
+  }
+
+  .hero__status {
+    right: 1.5rem;
+    bottom: 1.5rem;
+    writing-mode: initial;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-ready .hero__copy > *,
+  .is-ready .hero::after {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
