@@ -17,7 +17,7 @@ export const siteContent = {
   home: {
     title: "Johnny Ho",
     introduction:
-      "I like building thoughtful things across code, design, and media. This space is still taking shape; soon it will hold the projects, experiments, photographs, and side quests that keep me curious about how ideas become things.",
+      "Part-time engineering and design student, part-time creative, full-time napper. Born in Nanchang and based in Vancouver, I design, dream, and build things across engineering and art.",
     profileImage: "/images/profile.jpg",
     profileImageAlt:
       "Warm-toned desk setup with a Snoopy plush and computer screens",
@@ -25,27 +25,27 @@ export const siteContent = {
       {
         heading: "about",
         items: [
-          'currently exploring the space between <a href="/engineering">engineering</a>, <a href="/design">design</a>, and storytelling',
-          "usually working on a side project, taking photos, or collecting ideas for the next one",
+          'studying <a href="https://www.sfu.ca/fas/schools/sustainable-energy-engineering.html">sustainable energy engineering</a> and <a href="https://www.sfu.ca/siat.html">interactive arts &amp; technology</a>, with <a href="https://www.sfu.ca/chang-institute/home.html">innovation + entrepreneurship</a> at sfu',
+          "into f1, hockey, baseball, bouldering, badminton, esports, snoopy, cameras, music, and other retro things",
         ],
       },
       {
         heading: "what i've done",
         items: [
-          "built small tools and experiments for the web",
-          "designed interfaces, identities, and systems that make complicated things feel simpler",
-          "worked across engineering and creative projects with people i like learning from",
-          'made <a href="/multimedia">photos and videos</a> about places, people, and ordinary moments',
-          "kept a growing archive of unfinished ideas, notes, and useful mistakes",
-          "more details, links, and proper project write-ups are coming soon",
+          'vp media + design at <a href="https://www.instagram.com/theforumsfu/">the forum sfu</a> — creative lead and graphic designer',
+          'engineering design with <a href="https://www.enactussfu.ca/projects">nextspark at enactus sfu</a>',
+          'mechanical + electrical team member at <a href="https://www.instagram.com/ewb.sfu/">engineers without borders sfu</a>',
+          'multimedia work for <a href="https://www.youtube.com/@johostudio">@johostudio</a>, <a href="https://www.instagram.com/joho.studio/">@joho.studio</a>, and <a href="https://www.tiktok.com/@lifeofjoho?lang=en">@lifeofjoho</a>',
+          'director of media at <a href="https://www.caseit.org/">caseit sfu</a>',
+          'previous experience with <a href="https://subvision.ca/">subvision</a> and <a href="https://fbcyouthprogram.ca/ccsbc/">fraser basin council’s ccsbc</a>',
         ],
       },
       {
         heading: "what next",
         items: [
-          "turn this temporary page into a real portfolio",
-          "share more work instead of leaving it in folders",
-          "keep making things and getting better at explaining why",
+          "looking for spring 2027 engineering opportunities",
+          "keep making things across engineering, design, and multimedia",
+          "pass my classes and get a little more sleep",
         ],
       },
     ],
