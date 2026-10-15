@@ -1,36 +1,39 @@
-// EDIT THIS FILE to change the words and featured card on the home page.
-// Paragraphs accept simple HTML, so use <strong> for yellow highlights and
-// <a href="..."> for links.
+// EDIT THIS FILE to change the navigation or the text on any page.
+// `path` controls the URL and `label` controls the visible navigation text.
 export const siteContent = {
-  meta: {
-    title: "Joho — Portfolio",
-    description: "Joho's portfolio for engineering, design, and video work.",
-  },
+  siteName: "Joho",
+  description: "Joho's portfolio for engineering, design, and multimedia work.",
 
-  masthead: {
-    name: "joho / studio",
-    sticker: "TBD",
-  },
-
-  clock: {
-    timeZone: "America/Vancouver",
-    label: "pt",
-  },
-
-  paragraphs: [
-    "hello! this is <strong>joho</strong> — a small corner for things i make and learn.",
-    "i work across <strong>engineering</strong>, <strong>design</strong>, and <strong>video</strong>. right now, this page is intentionally <strong>tbd</strong>; projects and experiments will arrive as they are ready.",
+  pages: [
+    {
+      id: "home",
+      label: "home",
+      path: "/",
+      message: "to be developed and designed soon :)",
+    },
+    {
+      id: "engineering",
+      label: "engineering",
+      path: "/engineering",
+      message: "to be developed and designed soon :)",
+    },
+    {
+      id: "design",
+      label: "design",
+      path: "/design",
+      message: "to be developed and designed soon :)",
+    },
+    {
+      id: "multimedia",
+      label: "multimedia",
+      path: "/multimedia",
+      message: "to be developed and designed soon :)",
+    },
+    {
+      id: "life",
+      label: "life.",
+      path: "/life",
+      message: "to be developed and designed soon :)",
+    },
   ],
-
-  featured: {
-    // Add an image path such as "/images/project.jpg" to replace the placeholder.
-    image: "",
-    imageAlt: "",
-    eyebrow: "currently making",
-    title: "the next version",
-    note: "cards, motion, experiments, and the work itself.",
-    caption: "more soon",
-  },
-
-  footer: "portfolio / 00",
 };
