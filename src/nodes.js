@@ -28,7 +28,6 @@ function renderNode(node) {
     <${tag}
       class="map-node map-node-${escapeHtml(node.type)} tone-${escapeHtml(node.tone)}"
       data-node-id="${escapeHtml(node.id)}"
-      style="--node-x: ${node.x}%; --node-y: ${node.y}%"
       ${linkAttributes}
     >
       ${image}
@@ -107,6 +106,16 @@ export function mountNodes(app, siteContent) {
   let pointerId = null;
   let startX = 0;
   let startY = 0;
+
+  nodeElements.forEach((element) => {
+    const node = nodesContent.nodes.find(
+      (item) => item.id === element.dataset.nodeId,
+    );
+    if (!node) return;
+
+    element.style.left = `${node.x}%`;
+    element.style.top = `${node.y}%`;
+  });
 
   const applyTransform = () => {
     stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;

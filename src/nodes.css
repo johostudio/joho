@@ -135,8 +135,6 @@
 .map-node {
   --card: #fff;
   position: absolute;
-  top: var(--node-y);
-  left: var(--node-x);
   z-index: 1;
   display: block;
   width: 220px;
