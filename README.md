@@ -15,7 +15,7 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   navigation remains in `src/content.js`.
 - The home photo's hover caption is the `profileImageCaption` field in
   `content/site.md`.
-- The Nodes mind map content, links, colors, and positions live together in
+- The Nodes diagram labels, links, hover text, and positions live together in
   `src/nodes-data.js`.
 - Add another page by copying one object in the `navigation` list. If it should
   use a clean Vercel URL, add the same path to `vercel.json`.
