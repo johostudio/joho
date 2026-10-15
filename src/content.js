@@ -8,7 +8,7 @@ const navigation = [
   { id: "life", label: "life.", path: "/life" },
 ];
 
-const pageMessages = {
+const defaultPageMessages = {
   engineering: "to be developed and designed soon :)",
   design: "to be developed and designed soon :)",
   multimedia: "to be developed and designed soon :)",
@@ -169,7 +169,12 @@ export function parsePortfolioMarkdown(source) {
       profileImageAlt: metadata.profileImageAlt || defaults.profileImageAlt,
       sections,
     },
-    pageMessages,
+    pageMessages: {
+      engineering: metadata.engineeringPage || defaultPageMessages.engineering,
+      design: metadata.designPage || defaultPageMessages.design,
+      multimedia: metadata.multimediaPage || defaultPageMessages.multimedia,
+      life: metadata.lifePage || defaultPageMessages.life,
+    },
     footerLinks,
   };
 }

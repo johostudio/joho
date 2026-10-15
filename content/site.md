@@ -4,6 +4,10 @@ description: Johnny Ho's portfolio for engineering, design, and multimedia work.
 title: Johnny Ho
 profileImage: /images/profile.jpg
 profileImageAlt: Warm-toned desk setup with a Snoopy plush and computer screens
+engineeringPage: view my [engineering resume](https://drive.google.com/file/d/1kRnsVX39JUY91YljrQeLI4gDJiSWxr3f/view).
+designPage: view my [design resume](https://drive.google.com/file/d/1oTujAVYud-fiT_rsvUlgBWQ6CakMb0Xb/view).
+multimediaPage: view my [multimedia resume](https://drive.google.com/file/d/1THzzv3OjoL6F3dT5l-yx5zS8ORI6CrJc/view).
+lifePage: to be developed and designed soon :)
 ---
 
 Part-time engineering and design student, part-time creative, full-time napper. Born in Nanchang and based in Vancouver, I design, dream, and build things across engineering and art.
@@ -32,4 +36,4 @@ Part-time engineering and design student, part-time creative, full-time napper. 
 
 - [github](https://github.com/johostudio)
 - [linkedin](https://www.linkedin.com/in/johnnyho06/)
-- [email](mailto:home@joho.studio)
+- [email](mailto:jch38@sfu.ca)

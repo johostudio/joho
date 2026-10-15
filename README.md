@@ -11,7 +11,8 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   sections, hyphens for list items, and `[label](https://example.com)` for
   inline links. Publishing from `/edit` commits this file to `main`, which
   triggers the Vercel deployment.
-- Navigation and unfinished-page messages remain in `src/content.js`.
+- Secondary-page messages are editable in that file's top metadata block;
+  navigation remains in `src/content.js`.
 - Add another page by copying one object in the `navigation` list. If it should
   use a clean Vercel URL, add the same path to `vercel.json`.
 - The layout measurements in `src/styles.css` reproduce the current temporary

@@ -143,21 +143,23 @@ export function mountEditor(app) {
     updatePreview();
   });
 
-  fetch(`${apiUrl}?ref=${branch}`, {
-    cache: "no-store",
-    headers: { Accept: "application/vnd.github+json" },
-  })
-    .then((response) => (response.ok ? response.json() : null))
-    .then((currentFile) => {
-      if (!currentFile?.content || hasLocalEdits) return;
-
-      textarea.value = base64ToUtf8(currentFile.content);
-      draftState.textContent = "latest from github";
-      updatePreview();
+  if (!["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+    fetch(`${apiUrl}?ref=${branch}`, {
+      cache: "no-store",
+      headers: { Accept: "application/vnd.github+json" },
     })
-    .catch(() => {
-      // The bundled copy remains fully editable if GitHub is unavailable.
-    });
+      .then((response) => (response.ok ? response.json() : null))
+      .then((currentFile) => {
+        if (!currentFile?.content || hasLocalEdits) return;
+
+        textarea.value = base64ToUtf8(currentFile.content);
+        draftState.textContent = "latest from github";
+        updatePreview();
+      })
+      .catch(() => {
+        // The bundled copy remains fully editable if GitHub is unavailable.
+      });
+  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
