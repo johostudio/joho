@@ -35,9 +35,9 @@ with [innovation + entrepreneurship](https://www.sfu.ca/chang-institute/home.htm
 - looking for spring 2027 engineering opportunities
 - researching and making cool things when i'm free, currently exploring sustainability solutions in urban spaces
 - finish building my portfolio sites (until i'm happy :'o)
-- continue freelance design+media work with my studio, [johostudio](https://joho.studio/)
+- continue freelance design+media work with my studio, [johostudio](https://joho.studio/), make cool [minifilms](https://www.youtube.com/watch?v=xDQcMHPIASg)
 - concert maxxing with [photo](https://snoopystudio.framer.website/) passes, keeping myself busy (next show: tbd!)
-- working on misc. projects to keep me happy, like [this](https://moments-xi-five.vercel.app/),      [this](https://stormhacks2026-swart.vercel.app), maybe [this too](https://snoopytools.vercel.app/)
+- working on misc. projects to keep me happy, like [this](https://moments-xi-five.vercel.app/),      [this](https://stormhacks2026-swart.vercel.app), maybe [this too](https://snoopytools.vercel.app/), something [like this](https://verdant-delta-ashen.vercel.app/)? lots more coming as well :)
 
 ## footer
 
