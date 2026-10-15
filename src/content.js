@@ -61,8 +61,7 @@ export const siteContent = {
 
   footerLinks: [
     { label: "github", href: "https://github.com/johostudio" },
-    { label: "linkedin", href: "#" },
-    { label: "x", href: "#" },
-    { label: "email", href: "#" },
+    { label: "linkedin", href: "https://www.linkedin.com/in/johnnyho06/" },
+    { label: "email", href: "mailto:home@joho.studio" },
   ],
 };
