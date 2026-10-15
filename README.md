@@ -4,10 +4,12 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
 
 ## Editing the site
 
-- Change every navigation label, URL, and page message in `src/content.js`.
-- Add another page by copying one object in the `pages` list. If it should use a
-  clean Vercel URL, add the same path to `vercel.json`.
-- Change the minimal layout and typography in `src/styles.css`.
+- Change the name, introduction, navigation, profile image, section lists,
+  footer links, and every secondary-page message in `src/content.js`.
+- Add another page by copying one object in the `navigation` list. If it should
+  use a clean Vercel URL, add the same path to `vercel.json`.
+- The layout measurements in `src/styles.css` reproduce the current temporary
+  reference design. Edit that file only when you want to change the design.
 - The browser tab icon lives at `public/favicon.ico`.
 
 ## Development
