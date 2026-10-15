@@ -129,7 +129,7 @@ h1 {
 
 .profile-figure figcaption {
   position: absolute;
-  top: calc(var(--profile-size) + 8px);
+  top: calc(var(--profile-size) + 14px);
   right: 0;
   width: min(184px, calc(100vw - 48px));
   color: #52525b;
@@ -226,6 +226,7 @@ footer {
   }
 
   .profile-figure figcaption {
+    top: calc(var(--profile-size) + 8px);
     right: -44px;
     width: 220px;
     text-align: center;
