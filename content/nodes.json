@@ -36,14 +36,41 @@
       "preview": "places, interests, keepsakes, and everything outside the work.",
       "href": "/life",
       "size": 15
+    },
+    {
+      "id": "thought-5",
+      "x": 30,
+      "y": 47,
+      "title": "making things more connected",
+      "preview": "i wanna...",
+      "href": "/design",
+      "size": 18
     }
   ],
   "edges": [
-    ["engineering", "design"],
-    ["design", "multimedia"],
-    ["multimedia", "life"],
-    ["life", "engineering"],
-    ["engineering", "multimedia"],
-    ["design", "life"]
+    [
+      "engineering",
+      "design"
+    ],
+    [
+      "design",
+      "multimedia"
+    ],
+    [
+      "multimedia",
+      "life"
+    ],
+    [
+      "life",
+      "engineering"
+    ],
+    [
+      "engineering",
+      "multimedia"
+    ],
+    [
+      "design",
+      "life"
+    ]
   ]
 }
