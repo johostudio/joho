@@ -47,17 +47,35 @@
       "y": 47,
       "title": "making things more connected",
       "preview": "i wanna...",
-      "content": "i wanna...",
-      "href": "/design",
+      "content": "i wanna... build a lot of things",
+      "href": "",
       "size": 18
     }
   ],
   "edges": [
-    ["engineering", "design"],
-    ["design", "multimedia"],
-    ["multimedia", "life"],
-    ["life", "engineering"],
-    ["engineering", "multimedia"],
-    ["design", "life"]
+    [
+      "engineering",
+      "design"
+    ],
+    [
+      "design",
+      "multimedia"
+    ],
+    [
+      "multimedia",
+      "life"
+    ],
+    [
+      "life",
+      "engineering"
+    ],
+    [
+      "engineering",
+      "multimedia"
+    ],
+    [
+      "design",
+      "life"
+    ]
   ]
 }
