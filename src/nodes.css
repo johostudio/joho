@@ -2,17 +2,6 @@
   overflow-x: hidden;
 }
 
-@media (pointer: fine) {
-  .nodes-mode,
-  .nodes-mode a,
-  .nodes-mode button,
-  .nodes-mode .edge-hit {
-    cursor:
-      url("/circle-cursor.svg") 10 10,
-      auto;
-  }
-}
-
 .nodes-shell {
   max-width: 960px;
 }

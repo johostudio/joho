@@ -17,6 +17,16 @@
   -webkit-font-smoothing: antialiased;
 }
 
+@media (pointer: fine) {
+  html,
+  body,
+  body * {
+    cursor:
+      url("/circle-cursor.svg") 10 10,
+      auto !important;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
