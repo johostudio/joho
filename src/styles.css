@@ -235,6 +235,57 @@ h1 {
   color: #3f3f46;
 }
 
+.website-preview {
+  overflow: hidden;
+  margin-top: 28px;
+  border: 1px solid #d4d4d8;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.website-preview-bar {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e4e4e7;
+  color: #71717a;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.website-preview-status {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.website-preview-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.website-preview-bar a,
+.website-preview-bar a:visited {
+  flex: none;
+  margin-left: auto;
+  color: #09090b;
+  text-decoration: none;
+}
+
+.website-preview iframe {
+  display: block;
+  width: 100%;
+  height: clamp(420px, 68vh, 560px);
+  border: 0;
+  background: #fafafa;
+}
+
 footer {
   display: flex;
   justify-content: center;
@@ -249,6 +300,10 @@ footer {
 
   .profile-figure {
     --profile-size: 88px;
+  }
+
+  .website-preview iframe {
+    height: 500px;
   }
 }
 

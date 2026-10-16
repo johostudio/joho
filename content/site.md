@@ -8,6 +8,8 @@ profileImageCaption: my desk when i turned 20. now playing: [luke chiang](https:
 engineeringPage: view my [engineering resume](https://drive.google.com/file/d/1kRnsVX39JUY91YljrQeLI4gDJiSWxr3f/view).
 designPage: view my [design resume](https://drive.google.com/file/d/1oTujAVYud-fiT_rsvUlgBWQ6CakMb0Xb/view).
 multimediaPage: view my [multimedia demo work](https://drive.google.com/file/d/1THzzv3OjoL6F3dT5l-yx5zS8ORI6CrJc/view).
+multimediaPreviewUrl: https://snoopystudio.framer.website/
+multimediaPreviewLabel: snoopystudio.framer.website
 lifePage: to be developed and designed soon :)
 ---
 

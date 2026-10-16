@@ -33,6 +33,29 @@ export function renderFooter(siteContent) {
   return `<footer>${footerLinks}</footer>`;
 }
 
+function renderWebsitePreview(preview) {
+  if (!preview?.url || preview.url === "#") return "";
+
+  const url = escapeHtml(safeHref(preview.url));
+
+  return `
+    <section class="website-preview" aria-label="Live preview of ${escapeHtml(preview.label)}">
+      <div class="website-preview-bar">
+        <span class="website-preview-status" aria-hidden="true"></span>
+        <span class="website-preview-label">${escapeHtml(preview.label)}</span>
+        <a href="${url}" target="_blank" rel="noreferrer">open site ↗</a>
+      </div>
+      <iframe
+        src="${url}"
+        title="${escapeHtml(preview.label)} live website preview"
+        loading="eager"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="fullscreen"
+      ></iframe>
+    </section>
+  `;
+}
+
 export function renderPortfolio(siteContent, currentPage) {
   const homeSections = siteContent.home.sections
     .map(
@@ -71,6 +94,7 @@ export function renderPortfolio(siteContent, currentPage) {
     <section class="secondary-page" aria-labelledby="page-title">
       <h1 id="page-title">${escapeHtml(currentPage.label)}</h1>
       <p>${renderInlineMarkdown(siteContent.pageMessages[currentPage.id])}</p>
+      ${renderWebsitePreview(siteContent.pagePreviews?.[currentPage.id])}
     </section>
   `;
 
