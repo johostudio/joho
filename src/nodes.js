@@ -87,9 +87,53 @@ function renderEdges() {
   return nodesContent.edges
     .map(
       ([from, to]) =>
-        `<line data-from="${escapeHtml(from)}" data-to="${escapeHtml(to)}" />`,
+        `<g class="graph-edge" data-from="${escapeHtml(from)}" data-to="${escapeHtml(to)}">
+          <line class="edge-hit" />
+          <line class="edge-base" />
+          <line class="edge-glint" pathLength="1" />
+        </g>`,
     )
     .join("");
+}
+
+function createSpawnPoint(node, width, height, placedPoints) {
+  const padding = Math.max(38, node.size + 24);
+  const baseX = (node.x / 100) * width;
+  const baseY = (node.y / 100) * height;
+  const jitterX = Math.min(46, width * 0.065);
+  const jitterY = Math.min(42, height * 0.06);
+  const minimumDistance = Math.min(92, Math.max(62, width * 0.13));
+  let bestPoint = null;
+  let bestClearance = -1;
+
+  for (let attempt = 0; attempt < 28; attempt += 1) {
+    const point = {
+      x: Math.min(
+        width - padding,
+        Math.max(padding, baseX + (Math.random() * 2 - 1) * jitterX),
+      ),
+      y: Math.min(
+        height - padding,
+        Math.max(padding, baseY + (Math.random() * 2 - 1) * jitterY),
+      ),
+    };
+    const clearance = placedPoints.length
+      ? Math.min(
+          ...placedPoints.map((placed) =>
+            Math.hypot(point.x - placed.x, point.y - placed.y),
+          ),
+        )
+      : Number.POSITIVE_INFINITY;
+
+    if (clearance > bestClearance) {
+      bestPoint = point;
+      bestClearance = clearance;
+    }
+
+    if (clearance >= minimumDistance) return point;
+  }
+
+  return bestPoint;
 }
 
 export function mountNodes(app, siteContent) {
@@ -127,7 +171,7 @@ export function mountNodes(app, siteContent) {
   const canvas = app.querySelector(".nodes-canvas");
   const edgeSvg = app.querySelector(".nodes-edges");
   const nodeElements = [...app.querySelectorAll(".graph-node")];
-  const edgeElements = [...app.querySelectorAll(".nodes-edges line")];
+  const edgeElements = [...app.querySelectorAll(".graph-edge")];
   const dialog = app.querySelector(".node-page-dialog");
   const dialogTitle = dialog.querySelector("#node-page-title");
   const dialogBody = dialog.querySelector(".node-page-body");
@@ -151,10 +195,12 @@ export function mountNodes(app, siteContent) {
       const end = state.get(edge.dataset.to);
       if (!start || !end) return;
 
-      edge.setAttribute("x1", start.x);
-      edge.setAttribute("y1", start.y);
-      edge.setAttribute("x2", end.x);
-      edge.setAttribute("y2", end.y);
+      edge.querySelectorAll("line").forEach((line) => {
+        line.setAttribute("x1", start.x);
+        line.setAttribute("y1", start.y);
+        line.setAttribute("x2", end.x);
+        line.setAttribute("y2", end.y);
+      });
     });
   };
 
@@ -166,6 +212,8 @@ export function mountNodes(app, siteContent) {
     canvasHeight = bounds.height;
     edgeSvg.setAttribute("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`);
 
+    const placedPoints = [];
+
     nodesContent.nodes.forEach((node) => {
       const existing = state.get(node.id);
 
@@ -173,13 +221,22 @@ export function mountNodes(app, siteContent) {
         existing.x = (existing.x / previousWidth) * canvasWidth;
         existing.y = (existing.y / previousHeight) * canvasHeight;
       } else if (!existing) {
+        const spawnPoint = createSpawnPoint(
+          node,
+          canvasWidth,
+          canvasHeight,
+          placedPoints,
+        );
         state.set(node.id, {
-          x: (node.x / 100) * canvasWidth,
-          y: (node.y / 100) * canvasHeight,
+          x: spawnPoint.x,
+          y: spawnPoint.y,
           moved: false,
           blockClick: false,
         });
       }
+
+      const current = state.get(node.id);
+      if (current) placedPoints.push({ x: current.x, y: current.y });
     });
 
     updateGraph();

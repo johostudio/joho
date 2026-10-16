@@ -224,7 +224,7 @@ export function mountEditor(app) {
           <h1>Content</h1>
           <div class="editor-tabs" role="tablist" aria-label="Editor sections">
             <button type="button" role="tab" data-editor-tab="site">site copy</button>
-            <button type="button" role="tab" data-editor-tab="nodes">nodes</button>
+            <button type="button" role="tab" data-editor-tab="nodes">life nodes</button>
           </div>
         </div>
         <a class="editor-site-link" href="/">view site ↗</a>
@@ -258,11 +258,11 @@ export function mountEditor(app) {
         <section class="editor-card editor-nodes-card" aria-labelledby="nodes-editor-title">
           <div class="editor-card-header editor-nodes-header">
             <div>
-              <h2 id="nodes-editor-title">Nodes</h2>
+              <h2 id="nodes-editor-title">Life nodes</h2>
               <span class="editor-draft-state" data-nodes-state data-dirty="false">live graph</span>
             </div>
             <div class="editor-node-actions">
-              <a href="/nodes" target="_blank">view nodes ↗</a>
+              <a href="/nodes" target="_blank">view life nodes ↗</a>
               <button type="button" data-add-node>add thought</button>
             </div>
           </div>

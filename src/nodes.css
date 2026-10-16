@@ -2,6 +2,17 @@
   overflow-x: hidden;
 }
 
+@media (pointer: fine) {
+  .nodes-mode,
+  .nodes-mode a,
+  .nodes-mode button,
+  .nodes-mode .edge-hit {
+    cursor:
+      url("/circle-cursor.svg") 10 10,
+      auto;
+  }
+}
+
 .nodes-shell {
   max-width: 960px;
 }
@@ -40,13 +51,18 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: auto;
+}
+
+.edge-base,
+.edge-glint {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
   pointer-events: none;
 }
 
-.nodes-edges line {
-  vector-effect: non-scaling-stroke;
+.edge-base {
   stroke: #d4d4d8;
-  stroke-linecap: round;
   stroke-width: 1;
   transition:
     stroke 140ms ease,
@@ -54,9 +70,37 @@
     opacity 140ms ease;
 }
 
-.nodes-edges line[data-active="true"] {
+.edge-hit {
+  vector-effect: non-scaling-stroke;
+  stroke: transparent;
+  stroke-linecap: round;
+  stroke-width: 14;
+  pointer-events: stroke;
+}
+
+.edge-glint {
+  stroke: #52525b;
+  stroke-dasharray: 0.13 0.87;
+  stroke-dashoffset: 1;
+  stroke-width: 2;
+  opacity: 0;
+}
+
+.graph-edge[data-active="true"] .edge-base,
+.graph-edge:hover .edge-base {
   stroke: #71717a;
   stroke-width: 1.5;
+}
+
+.graph-edge:hover .edge-glint {
+  animation: edge-glisten 920ms linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes edge-glisten {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .graph-node {
@@ -448,7 +492,12 @@
   }
 
   .nodes-canvas[data-ready="true"] .graph-node,
-  .node-page-dialog[open] {
+  .node-page-dialog[open],
+  .graph-edge:hover .edge-glint {
     animation: none;
+  }
+
+  .graph-edge:hover .edge-glint {
+    opacity: 0.55;
   }
 }

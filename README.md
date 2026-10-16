@@ -15,7 +15,7 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   navigation remains in `src/content.js`.
 - The home photo's hover caption is the `profileImageCaption` field in
   `content/site.md`.
-- The `nodes` tab in `/edit` adds, removes, links, and connects thoughts without
+- The `life nodes` tab in `/edit` adds, removes, links, and connects thoughts without
   touching code. Each node has a short hover preview and a Markdown-style page
   that opens when the node is clicked. Its data is stored in
   `content/nodes.json` and publishing from the editor commits it to `main` like

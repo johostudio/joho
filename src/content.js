@@ -5,9 +5,10 @@ const navigation = [
   { id: "engineering", label: "engineering", path: "/engineering" },
   { id: "design", label: "design", path: "/design" },
   { id: "multimedia", label: "multimedia", path: "/multimedia" },
-  { id: "nodes", label: "nodes", path: "/nodes" },
-  { id: "life", label: "life.", path: "/life" },
+  { id: "nodes", label: "life nodes", path: "/nodes" },
 ];
+
+const standalonePages = [{ id: "life", label: "life.", path: "/life" }];
 
 const defaultPageMessages = {
   engineering: "to be developed and designed soon :)",
@@ -165,6 +166,7 @@ export function parsePortfolioMarkdown(source) {
     siteName: metadata.siteName || defaults.siteName,
     description: metadata.description || defaults.description,
     navigation,
+    pages: [...navigation, ...standalonePages],
     home: {
       title: metadata.title || defaults.title,
       introduction: introLines.join("\n").trim(),

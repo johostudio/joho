@@ -53,33 +53,12 @@
     }
   ],
   "edges": [
-    [
-      "engineering",
-      "design"
-    ],
-    [
-      "design",
-      "multimedia"
-    ],
-    [
-      "multimedia",
-      "life"
-    ],
-    [
-      "life",
-      "engineering"
-    ],
-    [
-      "engineering",
-      "multimedia"
-    ],
-    [
-      "design",
-      "life"
-    ],
-    [
-      "thought-5",
-      "design"
-    ]
+    ["engineering", "design"],
+    ["design", "multimedia"],
+    ["multimedia", "life"],
+    ["life", "engineering"],
+    ["engineering", "multimedia"],
+    ["design", "life"],
+    ["thought-5", "design"]
   ]
 }

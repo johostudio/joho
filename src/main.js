@@ -62,12 +62,13 @@ if (currentPath === "/edit") {
   mountEditor(app);
 } else if (currentPath === "/nodes") {
   const { mountNodes } = await import("./nodes.js");
-  document.title = `nodes — ${siteContent.siteName}`;
+  const nodesPage = siteContent.navigation.find((page) => page.id === "nodes");
+  document.title = `${nodesPage?.label || "life nodes"} — ${siteContent.siteName}`;
   metaDescription?.setAttribute("content", siteContent.description);
   mountNodes(app, siteContent);
 } else {
   const currentPage =
-    siteContent.navigation.find((page) => page.path === currentPath) ??
+    siteContent.pages.find((page) => page.path === currentPath) ??
     siteContent.navigation[0];
 
   document.title = `${currentPage.label} — ${siteContent.siteName}`;
