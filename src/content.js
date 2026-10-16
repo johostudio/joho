@@ -26,6 +26,10 @@ const defaults = {
   profileImageAlt: "Johnny Ho's profile image",
   profileImageCaption:
     "my desk when i turned 20. now playing: [luke chiang](https://open.spotify.com/album/53SL5EIuJdUG7EBF6u2rdv)",
+  multimediaStudioPreviewTitle: "studio archive",
+  multimediaStudioPreviewUrl: "https://joho.studio/",
+  multimediaStudioPreviewLabel: "joho.studio",
+  multimediaPreviewTitle: "photography archive",
   multimediaPreviewUrl: "https://snoopystudio.framer.website/",
   multimediaPreviewLabel: "snoopystudio.framer.website",
 };
@@ -185,13 +189,29 @@ export function parsePortfolioMarkdown(source) {
       life: metadata.lifePage || defaultPageMessages.life,
     },
     pagePreviews: {
-      multimedia: {
-        url: safeHref(
-          metadata.multimediaPreviewUrl || defaults.multimediaPreviewUrl,
-        ),
-        label:
-          metadata.multimediaPreviewLabel || defaults.multimediaPreviewLabel,
-      },
+      multimedia: [
+        {
+          title:
+            metadata.multimediaStudioPreviewTitle ||
+            defaults.multimediaStudioPreviewTitle,
+          url: safeHref(
+            metadata.multimediaStudioPreviewUrl ||
+              defaults.multimediaStudioPreviewUrl,
+          ),
+          label:
+            metadata.multimediaStudioPreviewLabel ||
+            defaults.multimediaStudioPreviewLabel,
+        },
+        {
+          title:
+            metadata.multimediaPreviewTitle || defaults.multimediaPreviewTitle,
+          url: safeHref(
+            metadata.multimediaPreviewUrl || defaults.multimediaPreviewUrl,
+          ),
+          label:
+            metadata.multimediaPreviewLabel || defaults.multimediaPreviewLabel,
+        },
+      ],
     },
     footerLinks,
   };

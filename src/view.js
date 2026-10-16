@@ -39,21 +39,28 @@ function renderWebsitePreview(preview) {
   const url = escapeHtml(safeHref(preview.url));
 
   return `
-    <section class="website-preview" aria-label="Live preview of ${escapeHtml(preview.label)}">
-      <div class="website-preview-bar">
-        <span class="website-preview-status" aria-hidden="true"></span>
-        <span class="website-preview-label">${escapeHtml(preview.label)}</span>
-        <a href="${url}" target="_blank" rel="noreferrer">open site ↗</a>
-      </div>
-      <iframe
-        src="${url}"
-        title="${escapeHtml(preview.label)} live website preview"
-        loading="eager"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allow="fullscreen"
-      ></iframe>
-    </section>
+    <div class="website-preview-block">
+      <h2>${escapeHtml(preview.title)}</h2>
+      <section class="website-preview" aria-label="Live preview of ${escapeHtml(preview.label)}">
+        <div class="website-preview-bar">
+          <span class="website-preview-status" aria-hidden="true"></span>
+          <span class="website-preview-label">${escapeHtml(preview.label)}</span>
+          <a href="${url}" target="_blank" rel="noreferrer">open site ↗</a>
+        </div>
+        <iframe
+          src="${url}"
+          title="${escapeHtml(preview.title)} live website preview"
+          loading="eager"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="fullscreen"
+        ></iframe>
+      </section>
+    </div>
   `;
+}
+
+function renderWebsitePreviews(previews = []) {
+  return previews.map(renderWebsitePreview).join("");
 }
 
 export function renderPortfolio(siteContent, currentPage) {
@@ -94,7 +101,7 @@ export function renderPortfolio(siteContent, currentPage) {
     <section class="secondary-page" aria-labelledby="page-title">
       <h1 id="page-title">${escapeHtml(currentPage.label)}</h1>
       <p>${renderInlineMarkdown(siteContent.pageMessages[currentPage.id])}</p>
-      ${renderWebsitePreview(siteContent.pagePreviews?.[currentPage.id])}
+      ${renderWebsitePreviews(siteContent.pagePreviews?.[currentPage.id])}
     </section>
   `;
 
