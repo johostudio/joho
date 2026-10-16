@@ -91,6 +91,21 @@ nav ul {
   list-style: none;
 }
 
+a {
+  transition:
+    opacity 110ms ease-out,
+    text-decoration-color 110ms ease-out,
+    text-underline-offset 110ms ease-out;
+}
+
+@media (hover: hover) {
+  a:hover {
+    opacity: 0.72;
+    text-decoration-color: #71717a;
+    text-underline-offset: 5px;
+  }
+}
+
 .simple-link,
 .simple-link:visited,
 .home-header a,
@@ -276,6 +291,10 @@ footer {
   }
 
   .profile-figure figcaption {
+    transition: none;
+  }
+
+  a {
     transition: none;
   }
 }
