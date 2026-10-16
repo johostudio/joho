@@ -235,6 +235,11 @@ h1 {
   color: #3f3f46;
 }
 
+.secondary-page > p a,
+.secondary-page > p a:visited {
+  color: #3f3f46;
+}
+
 .website-preview-block {
   margin-top: 28px;
 }
@@ -298,6 +303,10 @@ h1 {
   height: clamp(420px, 68vh, 560px);
   border: 0;
   background: #fafafa;
+}
+
+.website-preview-block-tall iframe {
+  height: clamp(760px, 90vh, 920px);
 }
 
 footer {

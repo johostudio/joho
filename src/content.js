@@ -194,6 +194,7 @@ export function parsePortfolioMarkdown(source) {
           title:
             metadata.multimediaStudioPreviewTitle ||
             defaults.multimediaStudioPreviewTitle,
+          tall: true,
           url: safeHref(
             metadata.multimediaStudioPreviewUrl ||
               defaults.multimediaStudioPreviewUrl,

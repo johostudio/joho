@@ -39,7 +39,7 @@ function renderWebsitePreview(preview) {
   const url = escapeHtml(safeHref(preview.url));
 
   return `
-    <div class="website-preview-block">
+    <div class="website-preview-block${preview.tall ? " website-preview-block-tall" : ""}">
       <h2>${escapeHtml(preview.title)}</h2>
       <section class="website-preview" aria-label="Live preview of ${escapeHtml(preview.label)}">
         <div class="website-preview-bar">
