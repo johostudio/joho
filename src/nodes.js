@@ -1,36 +1,85 @@
-import { escapeHtml, safeHref } from "./content.js";
+import { escapeHtml, renderInlineMarkdown, safeHref } from "./content.js";
 import { nodesContent } from "./nodes-data.js";
 import { renderNavigation } from "./view.js";
 import "./nodes.css";
 
-function renderNode(node) {
+function renderNodePageMarkdown(value = "") {
+  const blocks = [];
+  let paragraph = [];
+  let list = [];
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    blocks.push(`<p>${renderInlineMarkdown(paragraph.join(" ").trim())}</p>`);
+    paragraph = [];
+  };
+
+  const flushList = () => {
+    if (!list.length) return;
+    blocks.push(
+      `<ul>${list.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</ul>`,
+    );
+    list = [];
+  };
+
+  for (const rawLine of String(value).replaceAll("\r\n", "\n").split("\n")) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    const heading = line.match(/^#{1,3}\s+(.+)$/);
+    if (heading) {
+      flushParagraph();
+      flushList();
+      blocks.push(`<h3>${renderInlineMarkdown(heading[1])}</h3>`);
+      continue;
+    }
+
+    const listItem = line.match(/^[-*]\s+(.+)$/);
+    if (listItem) {
+      flushParagraph();
+      list.push(listItem[1]);
+      continue;
+    }
+
+    flushList();
+    paragraph.push(line);
+  }
+
+  flushParagraph();
+  flushList();
+  return blocks.join("");
+}
+
+function renderNode(node, index) {
   const readableTitle = node.title.replaceAll(".", "");
-  const href = safeHref(node.href);
-  const hasLink = Boolean(node.href && href !== "#");
-  const tag = hasLink ? "a" : "button";
-  const linkAttributes = hasLink
-    ? `href="${escapeHtml(href)}"`
-    : 'type="button"';
-  const previewType = hasLink ? "page" : "thought";
-  const previewAction = hasLink ? "click to open →" : "drag to move";
+  const floatX = 1.5 + (index % 3) * 0.55;
+  const floatY = 1.25 + ((index + 1) % 3) * 0.5;
+  const floatDuration = 6.4 + (index % 4) * 0.8;
+  const floatDelay = index * -1.17;
 
   return `
-    <${tag}
+    <button
       class="graph-node"
+      type="button"
       data-node-id="${escapeHtml(node.id)}"
-      ${linkAttributes}
-      aria-label="${hasLink ? "Open " : "Explore "}${escapeHtml(readableTitle)}: ${escapeHtml(node.preview)}"
+      aria-label="Read ${escapeHtml(readableTitle)}: ${escapeHtml(node.preview)}"
       draggable="false"
+      style="--float-x: ${floatX}px; --float-y: ${floatY}px; --float-duration: ${floatDuration}s; --float-delay: ${floatDelay}s"
     >
       <span class="graph-node-dot" aria-hidden="true"></span>
       <span class="graph-node-label" aria-hidden="true">${escapeHtml(node.title)}</span>
       <span class="node-preview" aria-hidden="true">
-        <span class="node-preview-type">${previewType}</span>
+        <span class="node-preview-type">node</span>
         <strong>${escapeHtml(node.title)}</strong>
         <span class="node-preview-copy">${escapeHtml(node.preview)}</span>
-        <span class="node-preview-open">${previewAction}</span>
+        <span class="node-preview-open">click to read &rarr;</span>
       </span>
-    </${tag}>
+    </button>
   `;
 }
 
@@ -59,50 +108,42 @@ export function mountNodes(app, siteContent) {
         ${nodesContent.nodes.map(renderNode).join("")}
       </section>
     </main>
+
+    <dialog class="node-page-dialog" aria-labelledby="node-page-title">
+      <article class="node-page-card">
+        <header class="node-page-header">
+          <span class="node-page-kicker">node</span>
+          <button class="node-page-close" type="button" aria-label="Close node page">&times;</button>
+          <h2 id="node-page-title"></h2>
+        </header>
+        <div class="node-page-body"></div>
+        <footer class="node-page-footer" hidden>
+          <a class="node-page-link" href="#"></a>
+        </footer>
+      </article>
+    </dialog>
   `;
 
   const canvas = app.querySelector(".nodes-canvas");
   const edgeSvg = app.querySelector(".nodes-edges");
   const nodeElements = [...app.querySelectorAll(".graph-node")];
   const edgeElements = [...app.querySelectorAll(".nodes-edges line")];
+  const dialog = app.querySelector(".node-page-dialog");
+  const dialogTitle = dialog.querySelector("#node-page-title");
+  const dialogBody = dialog.querySelector(".node-page-body");
+  const dialogFooter = dialog.querySelector(".node-page-footer");
+  const dialogLink = dialog.querySelector(".node-page-link");
   const state = new Map();
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
   let canvasWidth = 0;
   let canvasHeight = 0;
-  let lastFrameTime = 0;
-  let animationFrame = null;
 
-  const displayPoint = (nodeState, frameTime) => {
-    if (reducedMotion || nodeState.dragging) {
-      return { x: nodeState.x, y: nodeState.y };
-    }
-
-    return {
-      x:
-        nodeState.x +
-        Math.sin(frameTime * nodeState.speed + nodeState.phase) *
-          nodeState.amplitude,
-      y:
-        nodeState.y +
-        Math.cos(frameTime * nodeState.speed * 0.82 + nodeState.phase) *
-          nodeState.amplitude,
-    };
-  };
-
-  const updateGraph = (frameTime = lastFrameTime) => {
-    lastFrameTime = frameTime;
-
+  const updateGraph = () => {
     nodeElements.forEach((element) => {
       const nodeState = state.get(element.dataset.nodeId);
       if (!nodeState) return;
 
-      const point = displayPoint(nodeState, frameTime);
-      nodeState.renderX = point.x;
-      nodeState.renderY = point.y;
-      element.style.left = `${point.x}px`;
-      element.style.top = `${point.y}px`;
+      element.style.left = `${nodeState.x}px`;
+      element.style.top = `${nodeState.y}px`;
     });
 
     edgeElements.forEach((edge) => {
@@ -110,16 +151,11 @@ export function mountNodes(app, siteContent) {
       const end = state.get(edge.dataset.to);
       if (!start || !end) return;
 
-      edge.setAttribute("x1", start.renderX ?? start.x);
-      edge.setAttribute("y1", start.renderY ?? start.y);
-      edge.setAttribute("x2", end.renderX ?? end.x);
-      edge.setAttribute("y2", end.renderY ?? end.y);
+      edge.setAttribute("x1", start.x);
+      edge.setAttribute("y1", start.y);
+      edge.setAttribute("x2", end.x);
+      edge.setAttribute("y2", end.y);
     });
-  };
-
-  const animateGraph = (frameTime) => {
-    updateGraph(frameTime);
-    animationFrame = requestAnimationFrame(animateGraph);
   };
 
   const layoutGraph = () => {
@@ -130,7 +166,7 @@ export function mountNodes(app, siteContent) {
     canvasHeight = bounds.height;
     edgeSvg.setAttribute("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`);
 
-    nodesContent.nodes.forEach((node, index) => {
+    nodesContent.nodes.forEach((node) => {
       const existing = state.get(node.id);
 
       if (existing && previousWidth && previousHeight) {
@@ -140,24 +176,31 @@ export function mountNodes(app, siteContent) {
         state.set(node.id, {
           x: (node.x / 100) * canvasWidth,
           y: (node.y / 100) * canvasHeight,
-          renderX: null,
-          renderY: null,
           moved: false,
           blockClick: false,
-          dragging: false,
-          phase: index * 1.71,
-          amplitude: 1.5 + (index % 3) * 0.6,
-          speed: 0.00032 + (index % 4) * 0.000025,
         });
       }
     });
 
-    updateGraph(performance.now());
+    updateGraph();
     canvas.dataset.ready = "true";
+  };
 
-    if (!reducedMotion && animationFrame === null) {
-      animationFrame = requestAnimationFrame(animateGraph);
+  const openNodePage = (node) => {
+    const href = safeHref(node.href);
+    const hasLink = Boolean(node.href && href !== "#");
+    dialogTitle.textContent = node.title;
+    dialogBody.innerHTML =
+      renderNodePageMarkdown(node.content || node.preview) ||
+      "<p>This node is still being written.</p>";
+    dialogFooter.hidden = !hasLink;
+
+    if (hasLink) {
+      dialogLink.href = href;
+      dialogLink.textContent = `open ${node.title.replaceAll(".", "")} page \u2192`;
     }
+
+    if (!dialog.open) dialog.showModal();
   };
 
   const setActiveNode = (id) => {
@@ -198,11 +241,11 @@ export function mountNodes(app, siteContent) {
 
       const nodeState = state.get(element.dataset.nodeId);
       const bounds = canvas.getBoundingClientRect();
+      const elementBounds = element.getBoundingClientRect();
       if (!nodeState) return;
 
-      nodeState.x = nodeState.renderX ?? nodeState.x;
-      nodeState.y = nodeState.renderY ?? nodeState.y;
-      nodeState.dragging = true;
+      nodeState.x = elementBounds.left + elementBounds.width / 2 - bounds.left;
+      nodeState.y = elementBounds.top + elementBounds.height / 2 - bounds.top;
       pointerId = event.pointerId;
       startClientX = event.clientX;
       startClientY = event.clientY;
@@ -212,7 +255,7 @@ export function mountNodes(app, siteContent) {
       element.dataset.dragging = "true";
       element.setPointerCapture(pointerId);
       setActiveNode(element.dataset.nodeId);
-      updateGraph(performance.now());
+      updateGraph();
     });
 
     element.addEventListener("pointermove", (event) => {
@@ -238,17 +281,14 @@ export function mountNodes(app, siteContent) {
         canvasHeight - padding,
         Math.max(padding, event.clientY - bounds.top - offsetY),
       );
-      updateGraph(performance.now());
+      updateGraph();
     });
 
     const finishDrag = (event) => {
       if (event.pointerId !== pointerId) return;
 
       const nodeState = state.get(element.dataset.nodeId);
-      if (nodeState) {
-        nodeState.blockClick = nodeState.moved;
-        nodeState.dragging = false;
-      }
+      if (nodeState) nodeState.blockClick = nodeState.moved;
       element.releasePointerCapture(pointerId);
       pointerId = null;
       delete element.dataset.dragging;
@@ -259,11 +299,21 @@ export function mountNodes(app, siteContent) {
     element.addEventListener("pointercancel", finishDrag);
     element.addEventListener("click", (event) => {
       const nodeState = state.get(element.dataset.nodeId);
-      if (!nodeState?.blockClick) return;
+      if (nodeState?.blockClick) {
+        event.preventDefault();
+        nodeState.blockClick = false;
+        return;
+      }
 
-      event.preventDefault();
-      nodeState.blockClick = false;
+      openNodePage(node);
     });
+  });
+
+  dialog.querySelector(".node-page-close").addEventListener("click", () => {
+    dialog.close();
+  });
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
   });
 
   const resizeObserver = new ResizeObserver(layoutGraph);

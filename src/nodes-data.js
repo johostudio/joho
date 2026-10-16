@@ -1,7 +1,7 @@
 import nodesData from "../content/nodes.json";
 
 const fallbackStatus =
-  "in progress node diagram... drag nodes · hover to preview · click linked nodes to open";
+  "in progress node diagram... drag nodes · hover to preview · click nodes to read";
 
 function clamp(value, minimum, maximum, fallback) {
   const number = Number(value);
@@ -38,6 +38,7 @@ export function normalizeNodesContent(value = {}) {
     y: clamp(node?.y, 8, 92, 50),
     title: String(node?.title || `thought ${index + 1}`).trim(),
     preview: String(node?.preview || "").trim(),
+    content: String(node?.content || node?.preview || "").trim(),
     href: String(node?.href || "").trim(),
     size: clamp(node?.size, 12, 24, 16),
   }));

@@ -281,6 +281,12 @@
   line-height: 20px;
 }
 
+.editor-node-fields textarea[data-node-field="content"] {
+  min-height: 164px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
 .editor-node-fields input:focus,
 .editor-node-fields textarea:focus {
   border-color: #191813;

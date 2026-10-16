@@ -16,8 +16,10 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
 - The home photo's hover caption is the `profileImageCaption` field in
   `content/site.md`.
 - The `nodes` tab in `/edit` adds, removes, links, and connects thoughts without
-  touching code. Its data is stored in `content/nodes.json` and publishing from
-  the editor commits it to `main` like the site copy.
+  touching code. Each node has a short hover preview and a Markdown-style page
+  that opens when the node is clicked. Its data is stored in
+  `content/nodes.json` and publishing from the editor commits it to `main` like
+  the site copy.
 - Add another page by copying one object in the `navigation` list. If it should
   use a clean Vercel URL, add the same path to `vercel.json`.
 - The layout measurements in `src/styles.css` reproduce the current temporary

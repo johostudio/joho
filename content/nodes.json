@@ -1,5 +1,5 @@
 {
-  "status": "in progress node diagram... drag nodes · hover to preview · click linked nodes to open",
+  "status": "in progress node diagram... drag nodes · hover to preview · click nodes to read",
   "nodes": [
     {
       "id": "engineering",
@@ -7,6 +7,7 @@
       "y": 38,
       "title": "engineering",
       "preview": "energy systems, prototypes, resumes, and things being built.",
+      "content": "engineering notes, projects, and things currently being built.",
       "href": "/engineering",
       "size": 20
     },
@@ -16,6 +17,7 @@
       "y": 29,
       "title": "design",
       "preview": "visual identities, interfaces, graphics, and design work.",
+      "content": "visual identities, interfaces, graphics, and design work.",
       "href": "/design",
       "size": 17
     },
@@ -25,6 +27,7 @@
       "y": 62,
       "title": "multimedia",
       "preview": "photography, video, sound, motion, and stories in progress.",
+      "content": "photography, video, sound, motion, and stories in progress.",
       "href": "/multimedia",
       "size": 18
     },
@@ -34,6 +37,7 @@
       "y": 69,
       "title": "life.",
       "preview": "places, interests, keepsakes, and everything outside the work.",
+      "content": "places, interests, keepsakes, and everything outside the work.",
       "href": "/life",
       "size": 15
     },
@@ -43,34 +47,17 @@
       "y": 47,
       "title": "making things more connected",
       "preview": "i wanna...",
+      "content": "i wanna...",
       "href": "/design",
       "size": 18
     }
   ],
   "edges": [
-    [
-      "engineering",
-      "design"
-    ],
-    [
-      "design",
-      "multimedia"
-    ],
-    [
-      "multimedia",
-      "life"
-    ],
-    [
-      "life",
-      "engineering"
-    ],
-    [
-      "engineering",
-      "multimedia"
-    ],
-    [
-      "design",
-      "life"
-    ]
+    ["engineering", "design"],
+    ["design", "multimedia"],
+    ["multimedia", "life"],
+    ["life", "engineering"],
+    ["engineering", "multimedia"],
+    ["design", "life"]
   ]
 }

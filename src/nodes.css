@@ -61,6 +61,10 @@
 
 .graph-node {
   --node-size: 16px;
+  --float-x: 2px;
+  --float-y: 2px;
+  --float-duration: 7s;
+  --float-delay: 0s;
   appearance: none;
   position: absolute;
   z-index: 1;
@@ -77,17 +81,31 @@
   opacity: 0;
   outline: none;
   text-decoration: none;
-  transform: translate(-50%, -50%) scale(0.7);
+  transform: scale(0.7);
+  translate: -50% -50%;
   transition:
     opacity 240ms ease,
     transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
   touch-action: none;
   user-select: none;
+  will-change: transform, translate;
 }
 
 .nodes-canvas[data-ready="true"] .graph-node {
+  animation: node-float var(--float-duration) ease-in-out var(--float-delay)
+    infinite alternate;
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: scale(1);
+}
+
+@keyframes node-float {
+  from {
+    translate: calc(-50% - var(--float-x)) calc(-50% + var(--float-y));
+  }
+
+  to {
+    translate: calc(-50% + var(--float-x)) calc(-50% - var(--float-y));
+  }
 }
 
 .graph-node:hover,
@@ -97,7 +115,9 @@
 }
 
 .graph-node[data-dragging="true"] {
+  animation: none;
   cursor: grabbing;
+  translate: -50% -50%;
 }
 
 .graph-node-dot {
@@ -228,6 +248,150 @@
   color: #18181b;
 }
 
+.node-page-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #d4d4d8;
+  border-radius: 10px;
+  color: #18181b;
+  background: #fff;
+  box-shadow: 0 28px 80px rgb(24 24 27 / 20%);
+}
+
+.node-page-dialog[open] {
+  animation: node-page-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.node-page-dialog::backdrop {
+  background: rgb(24 24 27 / 18%);
+  backdrop-filter: blur(2px);
+}
+
+@keyframes node-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.node-page-card {
+  display: grid;
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.node-page-header {
+  position: relative;
+  padding: 28px 32px 22px;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.node-page-kicker {
+  display: block;
+  margin-bottom: 9px;
+  color: #a1a1aa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9px;
+  line-height: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.node-page-header h2 {
+  max-width: calc(100% - 40px);
+  font-size: clamp(24px, 5vw, 34px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.node-page-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0 0 2px;
+  border: 0;
+  border-radius: 50%;
+  place-items: center;
+  color: #71717a;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.node-page-close:hover,
+.node-page-close:focus-visible {
+  color: #18181b;
+  background: #f4f4f5;
+}
+
+.node-page-close:focus-visible {
+  outline: 1px solid #18181b;
+  outline-offset: 2px;
+}
+
+.node-page-body {
+  display: grid;
+  gap: 16px;
+  padding: 26px 32px 30px;
+  color: #3f3f46;
+  font-size: 14px;
+  line-height: 1.72;
+}
+
+.node-page-body h3 {
+  margin-top: 8px;
+  color: #18181b;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.node-page-body ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.node-page-body a,
+.node-page-link {
+  color: #18181b;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.node-page-footer {
+  display: block;
+  justify-content: initial;
+  gap: 0;
+  margin-top: 0;
+  padding: 0 32px 28px;
+}
+
+.node-page-footer[hidden] {
+  display: none;
+}
+
+.node-page-link {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
 @media (max-width: 639px) {
   .nodes-shell {
     padding-top: 56px;
@@ -246,6 +410,32 @@
   .node-preview {
     width: 184px;
   }
+
+  .node-page-dialog {
+    width: calc(100% - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+
+  .node-page-card {
+    max-height: calc(100dvh - 24px);
+  }
+
+  .node-page-header {
+    padding: 24px 22px 19px;
+  }
+
+  .node-page-close {
+    top: 13px;
+    right: 12px;
+  }
+
+  .node-page-body {
+    padding: 22px 22px 25px;
+  }
+
+  .node-page-footer {
+    padding: 0 22px 24px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -255,5 +445,10 @@
   .graph-node-label,
   .node-preview {
     transition: none;
+  }
+
+  .nodes-canvas[data-ready="true"] .graph-node,
+  .node-page-dialog[open] {
+    animation: none;
   }
 }

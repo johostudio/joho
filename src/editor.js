@@ -59,12 +59,13 @@ function serializeNodes(nodesDraft) {
     {
       status: nodesDraft.status,
       nodes: nodesDraft.nodes.map(
-        ({ id, x, y, title, preview, href, size }) => ({
+        ({ id, x, y, title, preview, content, href, size }) => ({
           id,
           x: Math.round(x * 10) / 10,
           y: Math.round(y * 10) / 10,
           title: title.trim(),
           preview: preview.trim(),
+          content: content.trim(),
           href: href.trim(),
           size,
         }),
@@ -96,6 +97,7 @@ function createThoughtNode(nodes) {
     y: Math.round(Math.min(78, Math.max(30, y))),
     title: "new thought",
     preview: "",
+    content: "",
     href: "",
     size: 14 + (nodes.length % 5),
   };
@@ -142,8 +144,13 @@ function renderNodeEditorItem(node, index, nodesDraft) {
         </label>
 
         <label class="editor-node-field-wide">
-          <span>thought</span>
+          <span>hover preview</span>
           <textarea data-node-field="preview" rows="3">${escapeHtml(node.preview)}</textarea>
+        </label>
+
+        <label class="editor-node-field-wide">
+          <span>page</span>
+          <textarea data-node-field="content" rows="8">${escapeHtml(node.content)}</textarea>
         </label>
 
         <label class="editor-node-field-wide">
