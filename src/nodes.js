@@ -4,25 +4,33 @@ import { renderNavigation } from "./view.js";
 import "./nodes.css";
 
 function renderNode(node) {
-  const readableTitle = node.title.replace(".", "");
+  const readableTitle = node.title.replaceAll(".", "");
+  const href = safeHref(node.href);
+  const hasLink = Boolean(node.href && href !== "#");
+  const tag = hasLink ? "a" : "button";
+  const linkAttributes = hasLink
+    ? `href="${escapeHtml(href)}"`
+    : 'type="button"';
+  const previewType = hasLink ? "page" : "thought";
+  const previewAction = hasLink ? "click to open →" : "drag to move";
 
   return `
-    <a
+    <${tag}
       class="graph-node"
       data-node-id="${escapeHtml(node.id)}"
-      href="${escapeHtml(safeHref(node.href))}"
-      aria-label="Open ${escapeHtml(readableTitle)}: ${escapeHtml(node.preview)}"
+      ${linkAttributes}
+      aria-label="${hasLink ? "Open " : "Explore "}${escapeHtml(readableTitle)}: ${escapeHtml(node.preview)}"
       draggable="false"
     >
       <span class="graph-node-dot" aria-hidden="true"></span>
       <span class="graph-node-label" aria-hidden="true">${escapeHtml(node.title)}</span>
       <span class="node-preview" aria-hidden="true">
-        <span class="node-preview-type">page</span>
+        <span class="node-preview-type">${previewType}</span>
         <strong>${escapeHtml(node.title)}</strong>
         <span class="node-preview-copy">${escapeHtml(node.preview)}</span>
-        <span class="node-preview-open">click to open →</span>
+        <span class="node-preview-open">${previewAction}</span>
       </span>
-    </a>
+    </${tag}>
   `;
 }
 
@@ -58,16 +66,43 @@ export function mountNodes(app, siteContent) {
   const nodeElements = [...app.querySelectorAll(".graph-node")];
   const edgeElements = [...app.querySelectorAll(".nodes-edges line")];
   const state = new Map();
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
   let canvasWidth = 0;
   let canvasHeight = 0;
+  let lastFrameTime = 0;
+  let animationFrame = null;
 
-  const updateGraph = () => {
+  const displayPoint = (nodeState, frameTime) => {
+    if (reducedMotion || nodeState.dragging) {
+      return { x: nodeState.x, y: nodeState.y };
+    }
+
+    return {
+      x:
+        nodeState.x +
+        Math.sin(frameTime * nodeState.speed + nodeState.phase) *
+          nodeState.amplitude,
+      y:
+        nodeState.y +
+        Math.cos(frameTime * nodeState.speed * 0.82 + nodeState.phase) *
+          nodeState.amplitude,
+    };
+  };
+
+  const updateGraph = (frameTime = lastFrameTime) => {
+    lastFrameTime = frameTime;
+
     nodeElements.forEach((element) => {
       const nodeState = state.get(element.dataset.nodeId);
       if (!nodeState) return;
 
-      element.style.left = `${nodeState.x}px`;
-      element.style.top = `${nodeState.y}px`;
+      const point = displayPoint(nodeState, frameTime);
+      nodeState.renderX = point.x;
+      nodeState.renderY = point.y;
+      element.style.left = `${point.x}px`;
+      element.style.top = `${point.y}px`;
     });
 
     edgeElements.forEach((edge) => {
@@ -75,11 +110,16 @@ export function mountNodes(app, siteContent) {
       const end = state.get(edge.dataset.to);
       if (!start || !end) return;
 
-      edge.setAttribute("x1", start.x);
-      edge.setAttribute("y1", start.y);
-      edge.setAttribute("x2", end.x);
-      edge.setAttribute("y2", end.y);
+      edge.setAttribute("x1", start.renderX ?? start.x);
+      edge.setAttribute("y1", start.renderY ?? start.y);
+      edge.setAttribute("x2", end.renderX ?? end.x);
+      edge.setAttribute("y2", end.renderY ?? end.y);
     });
+  };
+
+  const animateGraph = (frameTime) => {
+    updateGraph(frameTime);
+    animationFrame = requestAnimationFrame(animateGraph);
   };
 
   const layoutGraph = () => {
@@ -90,24 +130,34 @@ export function mountNodes(app, siteContent) {
     canvasHeight = bounds.height;
     edgeSvg.setAttribute("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`);
 
-    nodesContent.nodes.forEach((node) => {
+    nodesContent.nodes.forEach((node, index) => {
       const existing = state.get(node.id);
 
       if (existing && previousWidth && previousHeight) {
         existing.x = (existing.x / previousWidth) * canvasWidth;
         existing.y = (existing.y / previousHeight) * canvasHeight;
-      } else {
+      } else if (!existing) {
         state.set(node.id, {
           x: (node.x / 100) * canvasWidth,
           y: (node.y / 100) * canvasHeight,
+          renderX: null,
+          renderY: null,
           moved: false,
           blockClick: false,
+          dragging: false,
+          phase: index * 1.71,
+          amplitude: 1.5 + (index % 3) * 0.6,
+          speed: 0.00032 + (index % 4) * 0.000025,
         });
       }
     });
 
-    updateGraph();
+    updateGraph(performance.now());
     canvas.dataset.ready = "true";
+
+    if (!reducedMotion && animationFrame === null) {
+      animationFrame = requestAnimationFrame(animateGraph);
+    }
   };
 
   const setActiveNode = (id) => {
@@ -150,6 +200,9 @@ export function mountNodes(app, siteContent) {
       const bounds = canvas.getBoundingClientRect();
       if (!nodeState) return;
 
+      nodeState.x = nodeState.renderX ?? nodeState.x;
+      nodeState.y = nodeState.renderY ?? nodeState.y;
+      nodeState.dragging = true;
       pointerId = event.pointerId;
       startClientX = event.clientX;
       startClientY = event.clientY;
@@ -159,6 +212,7 @@ export function mountNodes(app, siteContent) {
       element.dataset.dragging = "true";
       element.setPointerCapture(pointerId);
       setActiveNode(element.dataset.nodeId);
+      updateGraph(performance.now());
     });
 
     element.addEventListener("pointermove", (event) => {
@@ -184,14 +238,17 @@ export function mountNodes(app, siteContent) {
         canvasHeight - padding,
         Math.max(padding, event.clientY - bounds.top - offsetY),
       );
-      updateGraph();
+      updateGraph(performance.now());
     });
 
     const finishDrag = (event) => {
       if (event.pointerId !== pointerId) return;
 
       const nodeState = state.get(element.dataset.nodeId);
-      if (nodeState) nodeState.blockClick = nodeState.moved;
+      if (nodeState) {
+        nodeState.blockClick = nodeState.moved;
+        nodeState.dragging = false;
+      }
       element.releasePointerCapture(pointerId);
       pointerId = null;
       delete element.dataset.dragging;

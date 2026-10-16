@@ -61,14 +61,19 @@
 
 .graph-node {
   --node-size: 16px;
+  appearance: none;
   position: absolute;
   z-index: 1;
   display: block;
   width: 34px;
   height: 34px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   color: #52525b;
+  background: transparent;
   cursor: grab;
+  font: inherit;
   opacity: 0;
   outline: none;
   text-decoration: none;

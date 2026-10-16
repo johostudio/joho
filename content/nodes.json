@@ -1,0 +1,49 @@
+{
+  "status": "in progress node diagram... drag nodes · hover to preview · click linked nodes to open",
+  "nodes": [
+    {
+      "id": "engineering",
+      "x": 34,
+      "y": 38,
+      "title": "engineering",
+      "preview": "energy systems, prototypes, resumes, and things being built.",
+      "href": "/engineering",
+      "size": 20
+    },
+    {
+      "id": "design",
+      "x": 59,
+      "y": 29,
+      "title": "design",
+      "preview": "visual identities, interfaces, graphics, and design work.",
+      "href": "/design",
+      "size": 17
+    },
+    {
+      "id": "multimedia",
+      "x": 67,
+      "y": 62,
+      "title": "multimedia",
+      "preview": "photography, video, sound, motion, and stories in progress.",
+      "href": "/multimedia",
+      "size": 18
+    },
+    {
+      "id": "life",
+      "x": 41,
+      "y": 69,
+      "title": "life.",
+      "preview": "places, interests, keepsakes, and everything outside the work.",
+      "href": "/life",
+      "size": 15
+    }
+  ],
+  "edges": [
+    ["engineering", "design"],
+    ["design", "multimedia"],
+    ["multimedia", "life"],
+    ["life", "engineering"],
+    ["engineering", "multimedia"],
+    ["design", "life"]
+  ]
+}

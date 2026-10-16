@@ -35,6 +35,32 @@
   letter-spacing: -0.055em;
 }
 
+.editor-tabs {
+  display: flex;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.editor-tabs button {
+  padding: 0 0 3px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  color: #706c61;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.editor-tabs button[aria-selected="true"] {
+  border-color: #191813;
+  color: #191813;
+}
+
+.editor-tabs button:focus-visible {
+  outline: 1px solid #191813;
+  outline-offset: 4px;
+}
+
 .editor-site-link,
 .editor-help-links a {
   color: #191813;
@@ -51,6 +77,10 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
   gap: 16px;
   align-items: start;
+}
+
+.editor-panel[hidden] {
+  display: none;
 }
 
 .editor-card {
@@ -128,6 +158,188 @@
 
 .editor-preview a {
   cursor: default;
+}
+
+.editor-nodes-card {
+  max-width: 1080px;
+}
+
+.editor-nodes-header {
+  align-items: center;
+}
+
+.editor-node-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.editor-node-actions a {
+  color: #191813;
+  font-size: 12px;
+  text-underline-offset: 4px;
+}
+
+.editor-node-actions button,
+.editor-node-heading button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.editor-node-actions button {
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid #191813;
+  border-radius: 6px;
+  color: #fff;
+  background: #191813;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.editor-node-actions button:hover {
+  background: #3a3831;
+}
+
+.editor-nodes-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editor-node {
+  min-width: 0;
+  padding: 22px;
+  border-bottom: 1px solid #e4e1d8;
+}
+
+.editor-node:nth-child(odd) {
+  border-right: 1px solid #e4e1d8;
+}
+
+.editor-node-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  color: #989387;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  line-height: 14px;
+}
+
+.editor-node-heading button {
+  padding: 2px 0;
+  color: #8b4033;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.editor-node-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+.editor-node-fields label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.editor-node-fields label > span,
+.editor-node-connections legend {
+  color: #706c61;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 14px;
+  text-transform: lowercase;
+}
+
+.editor-node-field-wide {
+  grid-column: 1 / -1;
+}
+
+.editor-node-fields input,
+.editor-node-fields textarea {
+  width: 100%;
+  border: 1px solid #d4d0c5;
+  border-radius: 6px;
+  outline: 0;
+  padding: 9px 10px;
+  color: #24231f;
+  background: #fff;
+  font: inherit;
+}
+
+.editor-node-fields textarea {
+  min-height: 76px;
+  resize: vertical;
+  line-height: 20px;
+}
+
+.editor-node-fields input:focus,
+.editor-node-fields textarea:focus {
+  border-color: #191813;
+  box-shadow: 0 0 0 1px #191813;
+}
+
+.editor-node-connections {
+  margin: 18px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.editor-node-connections legend {
+  margin-bottom: 8px;
+}
+
+.editor-node-connections > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.editor-connection {
+  position: relative;
+}
+
+.editor-connection input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.editor-connection span {
+  display: block;
+  padding: 5px 8px;
+  border: 1px solid #d4d0c5;
+  border-radius: 999px;
+  color: #706c61;
+  font-size: 10px;
+  line-height: 14px;
+  cursor: pointer;
+}
+
+.editor-connection input:checked + span {
+  border-color: #191813;
+  color: #fff;
+  background: #191813;
+}
+
+.editor-connection input:focus-visible + span {
+  outline: 1px solid #191813;
+  outline-offset: 2px;
+}
+
+.editor-node-empty {
+  color: #989387;
+  font-size: 10px;
+  line-height: 18px;
 }
 
 .editor-publish {
@@ -214,6 +426,14 @@
     grid-template-columns: 1fr;
   }
 
+  .editor-nodes-list {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-node:nth-child(odd) {
+    border-right: 0;
+  }
+
   .editor-preview-card {
     position: static;
   }
@@ -240,6 +460,20 @@
 
   .editor-card-header,
   .editor-publish {
+    padding: 18px;
+  }
+
+  .editor-nodes-header {
+    align-items: flex-start;
+  }
+
+  .editor-node-actions {
+    align-items: flex-end;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .editor-node {
     padding: 18px;
   }
 
