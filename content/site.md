@@ -40,6 +40,7 @@ lifePage: to be developed and designed soon :)
 ## what's next
 
 - looking for spring 2027 engineering opportunities
+- working on a ui redesign for my [badminton team](https://sfubadminton.com/) (out spring 2027)! and taking pictures in the meantime
 - researching and making cool things when i'm free, currently exploring sustainability solutions in urban spaces
 - finish building my portfolio sites (until i'm happy :'o)
 - continue freelance design+media work with my studio, [johostudio](https://joho.studio/), make cool [minifilms](https://www.youtube.com/watch?v=xDQcMHPIASg)
