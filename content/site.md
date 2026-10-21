@@ -5,11 +5,59 @@ title: johnny ho
 profileImage: /images/profile.jpg
 profileImageAlt: my desk when i turned 20
 profileImageCaption: my desk when i turned 20. now playing: [luke chiang](https://open.spotify.com/album/53SL5EIuJdUG7EBF6u2rdv)
+profileImageAlbum: https://open.spotify.com/album/53SL5EIuJdUG7EBF6u2rdv
+profileImageAlbumTitle: TYPHOON
+profileImageNowPlaying: luke chiang
 profileImage2: /images/mico-yvr.jpg
 profileImage2Alt: mico performing at yvr
-profileImage2Caption: mico @ yvr ! shot on fuji x-t4
+profileImage2Caption: mico @ yvr! now playing: [mico](https://open.spotify.com/album/1qbGwfRKoupCptOicxgdMc?si=xpUhKiXGSiatPrn5whuDlw)
+profileImage2Album: https://open.spotify.com/album/1qbGwfRKoupCptOicxgdMc?si=xpUhKiXGSiatPrn5whuDlw
+profileImage2AlbumTitle: When the lights turn on (deluxe)
+profileImage2NowPlaying: mico
 profileImage2Position: 50% 50%
 profileImage2Scale: 1
+profileImage3: /images/profile-sunset.jpg
+profileImage3Alt: a sunset over the water on Vancouver Island
+profileImage3Caption: vancouver island sunset! now playing: [tiffany day](https://open.spotify.com/album/4T7qu6MdxoGjzZPErRWgsO?si=WBATytIzQ9WFbjkbZtobFA)
+profileImage3Album: https://open.spotify.com/album/4T7qu6MdxoGjzZPErRWgsO?si=WBATytIzQ9WFbjkbZtobFA
+profileImage3AlbumTitle: HALO
+profileImage3NowPlaying: tiffany day
+profileImage4: /images/profile-crashing-out.jpg
+profileImage4Alt: crashing out beside a truck tire
+profileImage4Caption: crashing out... now playing: [brooke wheeler](https://open.spotify.com/album/4soR88y8IdYY95Vei3Pxpe?si=mZRlK-m9SB-SyhKp156UJQ)
+profileImage4Album: https://open.spotify.com/album/4soR88y8IdYY95Vei3Pxpe?si=mZRlK-m9SB-SyhKp156UJQ
+profileImage4AlbumTitle: frutigaze
+profileImage4NowPlaying: brooke wheeler
+profileImage5: /images/profile-club-retreat.jpg
+profileImage5Alt: friends together at club retreat
+profileImage5Caption: club retreat ! now playing: [pryme!](https://open.spotify.com/album/2S115TozTzp6okMbRNbeNd?si=Ql1LkyFYSL2OXKSS9z6o3A)
+profileImage5Album: https://open.spotify.com/album/2S115TozTzp6okMbRNbeNd?si=Ql1LkyFYSL2OXKSS9z6o3A
+profileImage5AlbumTitle: cross the line
+profileImage5NowPlaying: pryme!
+profileImage6: /images/profile-snoopy.jpg
+profileImage6Alt: johnny holding snoopy above his head
+profileImage6Caption: snoopy :) now playing: [lang](https://open.spotify.com/album/1na0WaMvJktkuSUdvUppWc?si=8747ae7726a84538)
+profileImage6Album: https://open.spotify.com/album/1na0WaMvJktkuSUdvUppWc?si=8747ae7726a84538
+profileImage6AlbumTitle: GROUND ZERO
+profileImage6NowPlaying: lang
+profileImage7: /images/profile-nostalgic.jpg
+profileImage7Alt: a glowing CRT monitor beside a laptop
+profileImage7Caption: nostalgic... now playing: [glaive](https://open.spotify.com/album/05vrswB4MQ52sF3ZyX1jDC?si=e8XJyupNR-KnYW5DVw9lcA)
+profileImage7Album: https://open.spotify.com/album/05vrswB4MQ52sF3ZyX1jDC?si=e8XJyupNR-KnYW5DVw9lcA
+profileImage7AlbumTitle: i care so much that i dont care at all
+profileImage7NowPlaying: glaive
+profileImage8: /images/profile-brandywine.jpg
+profileImage8Alt: mountain peaks above Brandywine Meadows
+profileImage8Caption: hike @ brandywine ! now playing: [kc](https://open.spotify.com/album/2m8rq4ip4MPBvceEHdgH5G?si=JNNzO14dRpCXNIyktMiu8g)
+profileImage8Album: https://open.spotify.com/album/2m8rq4ip4MPBvceEHdgH5G?si=JNNzO14dRpCXNIyktMiu8g
+profileImage8AlbumTitle: KC3
+profileImage8NowPlaying: kc
+profileImage9: /images/profile-ejean.jpg
+profileImage9Alt: ejean performing live in Vancouver
+profileImage9Caption: ejean @ yvr :) now playing: [ejean](https://open.spotify.com/album/16vgVnf2azQgmV7pGEBnjj?si=1f0c31df8dcc45b8)
+profileImage9Album: https://open.spotify.com/album/16vgVnf2azQgmV7pGEBnjj?si=1f0c31df8dcc45b8
+profileImage9AlbumTitle: Meant Love
+profileImage9NowPlaying: ejean
 engineeringPage: view my [engineering resume](https://drive.google.com/file/d/1kRnsVX39JUY91YljrQeLI4gDJiSWxr3f/view).
 designPage: view my [design resume](https://drive.google.com/file/d/1oTujAVYud-fiT_rsvUlgBWQ6CakMb0Xb/view).
 multimediaPage: view my [multimedia demo work](https://drive.google.com/file/d/1THzzv3OjoL6F3dT5l-yx5zS8ORI6CrJc/view).

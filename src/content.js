@@ -136,7 +136,7 @@ function parseFooterItem(item) {
 
 function parseMusicItem(item) {
   const link = item.match(
-    /^\[([^\]]+)]\((https:\/\/open\.spotify\.com\/track\/[^)\s?]+)(?:\?[^)\s]*)?\)$/i,
+    /^\[([^\]]+)]\((https:\/\/open\.spotify\.com\/(?:track|album)\/[^)\s]+)\)$/i,
   );
   if (!link) return null;
 
@@ -148,6 +148,13 @@ function parseMusicItem(item) {
     artist: artist || "Spotify",
     url: link[2],
   };
+}
+
+function parseSpotifyUrl(value = "") {
+  const href = safeHref(value);
+  return /^https:\/\/open\.spotify\.com\/(?:track|album)\/[^\s]+$/i.test(href)
+    ? href
+    : "";
 }
 
 function parseImagePosition(value = "50% 50%") {
@@ -163,26 +170,27 @@ function parseImageScale(value = "1") {
 }
 
 function parseProfileImages(metadata) {
-  const images = [
-    {
-      src: safeHref(metadata.profileImage || defaults.profileImage),
-      alt: metadata.profileImageAlt || defaults.profileImageAlt,
-      caption: metadata.profileImageCaption || defaults.profileImageCaption,
-      position: parseImagePosition(metadata.profileImagePosition),
-      scale: parseImageScale(metadata.profileImageScale),
-    },
-  ];
+  const images = [];
 
-  for (let index = 2; index <= 8; index += 1) {
-    const src = metadata[`profileImage${index}`];
+  for (let index = 1; index <= 20; index += 1) {
+    const suffix = index === 1 ? "" : String(index);
+    const key = `profileImage${suffix}`;
+    const src = metadata[key] || (index === 1 ? defaults.profileImage : "");
     if (!src) continue;
 
     images.push({
       src: safeHref(src),
-      alt: metadata[`profileImage${index}Alt`] || `Profile photo ${index}`,
-      caption: metadata[`profileImage${index}Caption`] || "",
-      position: parseImagePosition(metadata[`profileImage${index}Position`]),
-      scale: parseImageScale(metadata[`profileImage${index}Scale`]),
+      alt:
+        metadata[`${key}Alt`] ||
+        (index === 1 ? defaults.profileImageAlt : `Profile photo ${index}`),
+      caption:
+        metadata[`${key}Caption`] ||
+        (index === 1 ? defaults.profileImageCaption : ""),
+      position: parseImagePosition(metadata[`${key}Position`]),
+      scale: parseImageScale(metadata[`${key}Scale`]),
+      albumUrl: parseSpotifyUrl(metadata[`${key}Album`]),
+      albumTitle: metadata[`${key}AlbumTitle`] || "",
+      nowPlaying: metadata[`${key}NowPlaying`] || "Spotify",
     });
   }
 
@@ -222,6 +230,18 @@ export function parsePortfolioMarkdown(source) {
   const musicTracks = musicSection
     ? parseList(musicSection.lines).map(parseMusicItem).filter(Boolean)
     : [];
+  const profileAlbums = profileImages
+    .map((image, profileIndex) =>
+      image.albumUrl
+        ? {
+            title: image.albumTitle || image.nowPlaying,
+            artist: image.nowPlaying,
+            url: image.albumUrl,
+            profileIndex,
+          }
+        : null,
+    )
+    .filter(Boolean);
   const sections = rawSections
     .filter((section) => section !== footerSection && section !== musicSection)
     .map((section) => ({
@@ -279,10 +299,11 @@ export function parsePortfolioMarkdown(source) {
     },
     musicPlayer: {
       enabled:
-        metadata.musicPlayerEnabled !== "false" && musicTracks.length > 0,
+        metadata.musicPlayerEnabled !== "false" &&
+        (profileAlbums.length > 0 || musicTracks.length > 0),
       lastFmUser: metadata.musicLastFmUser || "",
       lastFmApiKey: metadata.musicLastFmApiKey || "",
-      tracks: musicTracks,
+      tracks: profileAlbums.length > 0 ? profileAlbums : musicTracks,
     },
     footerLinks,
   };

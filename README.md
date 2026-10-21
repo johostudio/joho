@@ -17,11 +17,14 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   `content/site.md`. Add more clickable photos with numbered fields such as
   `profileImage2`, `profileImage2Alt`, `profileImage2Caption`, and
   `profileImage2Position`. Use `profileImage2Scale` when a circular crop needs
-  more zoom.
-- The mini player is also edited in `content/site.md`. Add Spotify track links
-  under `## music player` using `- [song — artist](spotify-track-url)`. Set
+  more zoom. Pair that photo with its record using `profileImage2Album`,
+  `profileImage2AlbumTitle`, and `profileImage2NowPlaying`. Continue the same
+  numbered pattern for additional photos; the gallery and player stay in sync.
+- The fallback mini-player queue is also edited in `content/site.md`. Add
+  Spotify track or album links under `## music player` using
+  `- [title — artist](spotify-url)`. Profile-linked albums take priority. Set
   `musicLastFmUser` and `musicLastFmApiKey` in the front matter to let Last.fm
-  select the matching Spotify track when it is playing.
+  select a matching fallback item when it is playing.
 - The `life nodes` tab in `/edit` adds, removes, links, and connects thoughts without
   touching code. Each node has a short hover preview and a Markdown-style page
   that opens when the node is clicked. Its data is stored in

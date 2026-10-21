@@ -78,12 +78,18 @@ if (currentPath === "/edit") {
   app.innerHTML = renderPortfolio(siteContent, currentPage);
 
   if (currentPage.id === "home") {
-    mountProfileGallery(siteContent.home.profileImages);
+    let profileGallery = null;
+    const musicPlayer = mountMusicPlayer(siteContent.musicPlayer, {
+      onTrackChange(profileIndex) {
+        profileGallery?.selectImage(profileIndex, { reveal: true });
+      },
+    });
+    profileGallery = mountProfileGallery(siteContent.home.profileImages, {
+      onChange(profileIndex) {
+        musicPlayer?.selectProfile(profileIndex);
+      },
+    });
   }
-}
-
-if (currentPath !== "/edit") {
-  mountMusicPlayer(siteContent.musicPlayer);
 }
 
 enablePageTransitions();

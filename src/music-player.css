@@ -43,6 +43,8 @@
     repeating-radial-gradient(circle at center, #242424 0 2px, #111 2.5px 4px);
   background-position: center;
   background-size: cover;
+  animation: record-spin 8s linear infinite;
+  animation-play-state: paused;
 }
 
 .mini-player-record-center {
@@ -69,7 +71,7 @@
 }
 
 .mini-player[data-player-state="playing"] .mini-player-record-art {
-  animation: record-spin 8s linear infinite;
+  animation-play-state: running;
 }
 
 .mini-player[data-player-state="playing"] .mini-player-record-center {
@@ -93,6 +95,45 @@
   transition:
     opacity 110ms ease,
     transform 110ms ease;
+}
+
+.mini-player-caption {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  width: min(184px, calc(100vw - 48px));
+  color: #52525b;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(-50%, -3px);
+  transition:
+    color 110ms ease,
+    opacity 160ms ease,
+    transform 160ms ease,
+    visibility 0s linear 160ms;
+  pointer-events: none;
+}
+
+.mini-player:hover .mini-player-caption,
+.mini-player-record:focus-visible ~ .mini-player-caption,
+.mini-player-skip:focus-visible ~ .mini-player-caption {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 0s;
+  pointer-events: auto;
+}
+
+.mini-player-caption:hover,
+.mini-player-caption:focus-visible {
+  color: #09090b;
 }
 
 .mini-player-status,
@@ -136,11 +177,12 @@
 @media (prefers-reduced-motion: reduce) {
   .mini-player-record,
   .mini-player-record-center,
-  .mini-player-skip {
+  .mini-player-skip,
+  .mini-player-caption {
     transition: none;
   }
 
-  .mini-player[data-player-state="playing"] .mini-player-record-art {
+  .mini-player-record-art {
     animation: none;
   }
 }

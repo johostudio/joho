@@ -1,8 +1,8 @@
 import { renderInlineMarkdown } from "./content.js";
 
-export function mountProfileGallery(images = []) {
+export function mountProfileGallery(images = [], { onChange } = {}) {
   const gallery = document.querySelector("[data-profile-gallery]");
-  if (!gallery || images.length < 2) return;
+  if (!gallery || images.length < 2) return null;
 
   const button = gallery.querySelector(".profile-photo-button");
   const image = gallery.querySelector("[data-profile-image]");
@@ -12,6 +12,7 @@ export function mountProfileGallery(images = []) {
   ).matches;
   const hasHover = window.matchMedia("(hover: hover)").matches;
   let currentIndex = 0;
+  let switchTimer = null;
 
   const preloadNext = () => {
     const next = images[(currentIndex + 1) % images.length];
@@ -19,9 +20,9 @@ export function mountProfileGallery(images = []) {
     preload.src = next.src;
   };
 
-  const showImage = (index, { reveal = false } = {}) => {
-    const next = images[index];
-    currentIndex = index;
+  const showImage = (index, { reveal = false, notify = false } = {}) => {
+    currentIndex = (index + images.length) % images.length;
+    const next = images[currentIndex];
     image.src = next.src;
     image.alt = next.alt;
     image.style.objectPosition = next.position;
@@ -37,23 +38,45 @@ export function mountProfileGallery(images = []) {
       delete gallery.dataset.captionVisible;
     }
     preloadNext();
+
+    if (notify && typeof onChange === "function") {
+      onChange(currentIndex, next);
+    }
   };
 
-  button.addEventListener("click", () => {
-    if (gallery.dataset.switching === "true") return;
-    const nextIndex = (currentIndex + 1) % images.length;
+  const selectImage = (index, { reveal = true, notify = false } = {}) => {
+    const nextIndex = (index + images.length) % images.length;
+
+    if (switchTimer !== null) {
+      window.clearTimeout(switchTimer);
+      switchTimer = null;
+    }
+
+    if (nextIndex === currentIndex) {
+      delete gallery.dataset.switching;
+      return;
+    }
 
     if (reducedMotion) {
-      showImage(nextIndex, { reveal: true });
+      showImage(nextIndex, { reveal, notify });
       return;
     }
 
     gallery.dataset.switching = "true";
-    window.setTimeout(() => {
-      showImage(nextIndex, { reveal: true });
+    switchTimer = window.setTimeout(() => {
+      showImage(nextIndex, { reveal, notify });
       delete gallery.dataset.switching;
+      switchTimer = null;
     }, 110);
+  };
+
+  button.addEventListener("click", () => {
+    selectImage(currentIndex + 1, { reveal: true, notify: true });
   });
 
   showImage(0, { reveal: false });
+
+  return {
+    selectImage,
+  };
 }

@@ -40,7 +40,7 @@ export function renderMusicPlayer(config) {
 
   return `
     <div class="mini-player" aria-label="Mini music player" data-player-state="loading">
-      <button class="mini-player-skip" type="button" data-player-action="previous" aria-label="Previous track">
+      <button class="mini-player-skip" type="button" data-player-action="previous" aria-label="Previous album">
         ${icons.previous}
       </button>
 
@@ -56,10 +56,17 @@ export function renderMusicPlayer(config) {
         <span class="mini-player-record-center" data-player-icon>${icons.play}</span>
       </button>
 
-      <button class="mini-player-skip" type="button" data-player-action="next" aria-label="Next track">
+      <button class="mini-player-skip" type="button" data-player-action="next" aria-label="Next album">
         ${icons.next}
       </button>
 
+      <a
+        class="mini-player-caption"
+        data-player-caption
+        href="${escapeHtml(firstTrack.url)}"
+        target="_blank"
+        rel="noreferrer"
+      >now playing: <span data-player-caption-title>${escapeHtml(firstTrack.title)}</span></a>
       <span class="mini-player-status" data-player-status aria-live="polite">
         ${escapeHtml(firstTrack.title)} by ${escapeHtml(firstTrack.artist)}
       </span>
@@ -90,13 +97,16 @@ function loadSpotifyApi(onReady) {
   document.head.append(script);
 }
 
-async function getSpotifyArtwork(track) {
+async function getSpotifyMetadata(track) {
   const response = await fetch(
     `${SPOTIFY_OEMBED}?url=${encodeURIComponent(track.url)}`,
   );
-  if (!response.ok) throw new Error("Spotify artwork unavailable");
+  if (!response.ok) throw new Error("Spotify metadata unavailable");
   const data = await response.json();
-  return data.thumbnail_url || "";
+  return {
+    artwork: data.thumbnail_url || "",
+    title: data.title || track.title,
+  };
 }
 
 async function getLastFmTrack(config) {
@@ -121,59 +131,84 @@ async function getLastFmTrack(config) {
   };
 }
 
-export function mountMusicPlayer(config) {
+export function mountMusicPlayer(config, { onTrackChange } = {}) {
   const player = document.querySelector(".mini-player");
-  if (!player || !config?.enabled || !config.tracks?.length) return;
+  if (!player || !config?.enabled || !config.tracks?.length) return null;
 
   const embed = player.querySelector("[data-spotify-controller]");
   const record = player.querySelector(".mini-player-record");
   const artwork = player.querySelector(".mini-player-record-art");
   const playIcon = player.querySelector("[data-player-icon]");
+  const caption = player.querySelector("[data-player-caption]");
+  const captionTitle = player.querySelector("[data-player-caption-title]");
   const status = player.querySelector("[data-player-status]");
   let controller = null;
   let currentIndex = 0;
+  let currentTitle = config.tracks[0].title;
   let isPaused = true;
   let hasInteracted = false;
+  let metadataRequest = 0;
 
-  const updateArtwork = async (track) => {
+  const updateControlLabels = () => {
+    const track = config.tracks[currentIndex];
+    const action = isPaused ? "Play" : "Pause";
+    status.textContent = `${currentTitle} by ${track.artist}`;
+    record.setAttribute(
+      "aria-label",
+      `${action} ${currentTitle} by ${track.artist}`,
+    );
+    record.title = `${action} ${currentTitle} — ${track.artist}`;
+  };
+
+  const updateMetadata = async (track) => {
+    const request = ++metadataRequest;
+
     try {
-      const imageUrl = await getSpotifyArtwork(track);
-      if (!imageUrl) return;
-      artwork.style.backgroundImage = `url("${imageUrl.replaceAll('"', "%22")}")`;
+      const metadata = await getSpotifyMetadata(track);
+      if (request !== metadataRequest) return;
+      if (metadata.artwork) {
+        artwork.style.backgroundImage = `url("${metadata.artwork.replaceAll('"', "%22")}")`;
+      }
+      currentTitle = metadata.title;
+      captionTitle.textContent = currentTitle;
+      updateControlLabels();
     } catch {
       player.dataset.artwork = "unavailable";
     }
   };
 
-  const showTrack = (index, { play = false } = {}) => {
+  const showTrack = (index, { play = false, notify = false } = {}) => {
     currentIndex = (index + config.tracks.length) % config.tracks.length;
     const track = config.tracks[currentIndex];
-    const action = isPaused ? "Play" : "Pause";
-    status.textContent = `${track.title} by ${track.artist}`;
-    record.setAttribute(
-      "aria-label",
-      `${action} ${track.title} by ${track.artist}`,
-    );
-    record.title = `${action} ${track.title} — ${track.artist}`;
-    updateArtwork(track);
+    currentTitle = track.title;
+    caption.href = track.url;
+    captionTitle.textContent = currentTitle;
+    updateControlLabels();
+    updateMetadata(track);
 
     if (controller) {
       controller.loadEntity(track.url);
       if (play) window.setTimeout(() => controller.play(), 120);
     }
+
+    if (notify && typeof onTrackChange === "function") {
+      onTrackChange(track.profileIndex ?? currentIndex, track, currentIndex);
+    }
   };
 
   const setPaused = (paused) => {
     isPaused = paused;
-    const track = config.tracks[currentIndex];
-    const action = paused ? "Play" : "Pause";
     player.dataset.playerState = paused ? "paused" : "playing";
-    record.setAttribute(
-      "aria-label",
-      `${action} ${track.title} by ${track.artist}`,
-    );
-    record.title = `${action} ${track.title} — ${track.artist}`;
+    updateControlLabels();
     playIcon.innerHTML = paused ? icons.play : icons.pause;
+  };
+
+  const selectProfile = (profileIndex) => {
+    const trackIndex = config.tracks.findIndex(
+      (track) => track.profileIndex === profileIndex,
+    );
+    if (trackIndex < 0 || trackIndex === currentIndex) return;
+    showTrack(trackIndex, { play: !isPaused });
   };
 
   player.querySelectorAll("[data-player-action]").forEach((button) => {
@@ -184,9 +219,9 @@ export function mountMusicPlayer(config) {
       if (action === "play" && controller) {
         controller.togglePlay();
       } else if (action === "previous") {
-        showTrack(currentIndex - 1, { play: !isPaused });
+        showTrack(currentIndex - 1, { play: !isPaused, notify: true });
       } else if (action === "next") {
-        showTrack(currentIndex + 1, { play: !isPaused });
+        showTrack(currentIndex + 1, { play: !isPaused, notify: true });
       }
     });
   });
@@ -224,7 +259,7 @@ export function mountMusicPlayer(config) {
           trackMatches(track, recent.title, recent.artist),
         );
         if (!hasInteracted && matchIndex >= 0 && matchIndex !== currentIndex) {
-          showTrack(matchIndex);
+          showTrack(matchIndex, { notify: true });
         }
       } catch {
         // The manually editable Spotify queue remains available if Last.fm is offline.
@@ -234,4 +269,12 @@ export function mountMusicPlayer(config) {
     syncLastFm();
     window.setInterval(syncLastFm, 30_000);
   }
+
+  return {
+    selectProfile,
+    selectTrack(index) {
+      if (index === currentIndex) return;
+      showTrack(index, { play: !isPaused, notify: true });
+    },
+  };
 }
