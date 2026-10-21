@@ -58,6 +58,12 @@ profileImage9Caption: ejean @ yvr :) now playing: [ejean](https://open.spotify.c
 profileImage9Album: https://open.spotify.com/album/16vgVnf2azQgmV7pGEBnjj?si=1f0c31df8dcc45b8
 profileImage9AlbumTitle: Meant Love
 profileImage9NowPlaying: ejean
+profileImage10: /images/profile-new-year.jpg
+profileImage10Alt: snoopy figures silhouetted by warm sunlight above a glowing monitor
+profileImage10Caption: to another good year. now playing: [chrome](https://open.spotify.com/album/4PiMPxSjZZtFjLYDdYEq6y?si=ybriWeYqRgKYVgE4TDejfw)
+profileImage10Album: https://open.spotify.com/album/4PiMPxSjZZtFjLYDdYEq6y?si=ybriWeYqRgKYVgE4TDejfw
+profileImage10AlbumTitle: Yogurt
+profileImage10NowPlaying: chrome
 engineeringPage: view my [engineering resume](https://drive.google.com/file/d/1kRnsVX39JUY91YljrQeLI4gDJiSWxr3f/view).
 designPage: view my [design resume](https://drive.google.com/file/d/1oTujAVYud-fiT_rsvUlgBWQ6CakMb0Xb/view).
 multimediaPage: view my [multimedia demo work](https://drive.google.com/file/d/1THzzv3OjoL6F3dT5l-yx5zS8ORI6CrJc/view).
