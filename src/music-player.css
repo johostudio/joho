@@ -97,11 +97,15 @@
     transform 110ms ease;
 }
 
+.mini-player-skip:disabled {
+  opacity: 0.14;
+}
+
 .mini-player-caption {
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 3px);
   left: 50%;
-  width: min(184px, calc(100vw - 48px));
+  width: 100%;
   color: #52525b;
   font-size: 11px;
   line-height: 16px;
@@ -155,7 +159,7 @@
     transform: scale(1.035);
   }
 
-  .mini-player-skip:hover {
+  .mini-player-skip:not(:disabled):hover {
     opacity: 0.9;
     transform: translateY(-1px);
   }

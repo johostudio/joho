@@ -1,6 +1,12 @@
 import { escapeHtml, renderInlineMarkdown, safeHref } from "./content.js";
 import { renderMusicPlayer } from "./music-player.js";
 
+const profileArrow = (direction) => `
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path d="${direction === "previous" ? "m12 5-5 5 5 5" : "m8 5 5 5-5 5"}" />
+  </svg>
+`;
+
 export function renderNavigation(siteContent, currentPageId) {
   return `
     <nav aria-label="Primary navigation">
@@ -96,6 +102,12 @@ export function renderPortfolio(siteContent, currentPage) {
       <div class="home-media">
         ${renderMusicPlayer(siteContent.musicPlayer)}
         <figure class="profile-figure" data-profile-gallery>
+          <button
+            class="profile-gallery-step profile-gallery-step-previous"
+            type="button"
+            data-profile-action="previous"
+            aria-label="Previous photo"
+          >${profileArrow("previous")}</button>
           <button class="profile-photo-button" type="button" aria-label="Show next photo">
             <img
               class="profile-image"
@@ -104,6 +116,12 @@ export function renderPortfolio(siteContent, currentPage) {
               alt="${escapeHtml(firstProfileImage.alt)}"
             />
           </button>
+          <button
+            class="profile-gallery-step profile-gallery-step-next"
+            type="button"
+            data-profile-action="next"
+            aria-label="Next photo"
+          >${profileArrow("next")}</button>
           <figcaption data-profile-caption>${renderInlineMarkdown(firstProfileImage.caption)}</figcaption>
         </figure>
       </div>

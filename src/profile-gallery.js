@@ -14,10 +14,13 @@ export function mountProfileGallery(images = [], { onChange } = {}) {
   let currentIndex = 0;
   let switchTimer = null;
 
-  const preloadNext = () => {
-    const next = images[(currentIndex + 1) % images.length];
-    const preload = new Image();
-    preload.src = next.src;
+  const preloadAdjacent = () => {
+    [-1, 1].forEach((offset) => {
+      const nearby =
+        images[(currentIndex + offset + images.length) % images.length];
+      const preload = new Image();
+      preload.src = nearby.src;
+    });
   };
 
   const showImage = (index, { reveal = false, notify = false } = {}) => {
@@ -37,7 +40,7 @@ export function mountProfileGallery(images = [], { onChange } = {}) {
     } else {
       delete gallery.dataset.captionVisible;
     }
-    preloadNext();
+    preloadAdjacent();
 
     if (notify && typeof onChange === "function") {
       onChange(currentIndex, next);
@@ -72,6 +75,13 @@ export function mountProfileGallery(images = [], { onChange } = {}) {
 
   button.addEventListener("click", () => {
     selectImage(currentIndex + 1, { reveal: true, notify: true });
+  });
+
+  gallery.querySelectorAll("[data-profile-action]").forEach((control) => {
+    control.addEventListener("click", () => {
+      const offset = control.dataset.profileAction === "previous" ? -1 : 1;
+      selectImage(currentIndex + offset, { reveal: true, notify: true });
+    });
   });
 
   showImage(0, { reveal: false });

@@ -20,6 +20,8 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   more zoom. Pair that photo with its record using `profileImage2Album`,
   `profileImage2AlbumTitle`, and `profileImage2NowPlaying`. Continue the same
   numbered pattern for additional photos; the gallery and player stay in sync.
+  The arrows on the photo change the photo/album pair. The arrows around the
+  record move through songs inside the active album.
 - The fallback mini-player queue is also edited in `content/site.md`. Add
   Spotify track or album links under `## music player` using
   `- [title — artist](spotify-url)`. Profile-linked albums take priority. Set

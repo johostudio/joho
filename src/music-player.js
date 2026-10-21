@@ -21,9 +21,9 @@ function normalize(value = "") {
     .toLowerCase();
 }
 
-function trackMatches(track, title, artist) {
-  const expectedTitle = normalize(track.title);
-  const expectedArtist = normalize(track.artist.split(",")[0]);
+function itemMatches(item, title, artist) {
+  const expectedTitle = normalize(item.title);
+  const expectedArtist = normalize(item.artist.split(",")[0]);
   const receivedTitle = normalize(title);
   const receivedArtist = normalize(artist);
 
@@ -36,11 +36,11 @@ function trackMatches(track, title, artist) {
 
 export function renderMusicPlayer(config) {
   if (!config?.enabled || !config.tracks?.length) return "";
-  const firstTrack = config.tracks[0];
+  const firstAlbum = config.tracks[0];
 
   return `
     <div class="mini-player" aria-label="Mini music player" data-player-state="loading">
-      <button class="mini-player-skip" type="button" data-player-action="previous" aria-label="Previous album">
+      <button class="mini-player-skip" type="button" data-player-action="previous" aria-label="Previous song in ${escapeHtml(firstAlbum.title)}" disabled>
         ${icons.previous}
       </button>
 
@@ -48,27 +48,27 @@ export function renderMusicPlayer(config) {
         class="mini-player-record"
         type="button"
         data-player-action="play"
-        aria-label="Play ${escapeHtml(firstTrack.title)} by ${escapeHtml(firstTrack.artist)}"
-        title="Play ${escapeHtml(firstTrack.title)} — ${escapeHtml(firstTrack.artist)}"
+        aria-label="Play ${escapeHtml(firstAlbum.title)} by ${escapeHtml(firstAlbum.artist)}"
+        title="Play ${escapeHtml(firstAlbum.title)} — ${escapeHtml(firstAlbum.artist)}"
         disabled
       >
         <span class="mini-player-record-art" aria-hidden="true"></span>
         <span class="mini-player-record-center" data-player-icon>${icons.play}</span>
       </button>
 
-      <button class="mini-player-skip" type="button" data-player-action="next" aria-label="Next album">
+      <button class="mini-player-skip" type="button" data-player-action="next" aria-label="Next song in ${escapeHtml(firstAlbum.title)}" disabled>
         ${icons.next}
       </button>
 
       <a
         class="mini-player-caption"
         data-player-caption
-        href="${escapeHtml(firstTrack.url)}"
+        href="${escapeHtml(firstAlbum.url)}"
         target="_blank"
         rel="noreferrer"
-      >now playing: <span data-player-caption-title>${escapeHtml(firstTrack.title)}</span></a>
+      ><span data-player-caption-title>${escapeHtml(firstAlbum.title)}</span></a>
       <span class="mini-player-status" data-player-status aria-live="polite">
-        ${escapeHtml(firstTrack.title)} by ${escapeHtml(firstTrack.artist)}
+        ${escapeHtml(firstAlbum.title)} by ${escapeHtml(firstAlbum.artist)}
       </span>
       <div class="mini-player-embed" aria-hidden="true" inert>
         <div data-spotify-controller></div>
@@ -97,16 +97,56 @@ function loadSpotifyApi(onReady) {
   document.head.append(script);
 }
 
-async function getSpotifyMetadata(track) {
+function isSpotifyTrack(value = "") {
+  return /^https:\/\/open\.spotify\.com\/track\/[A-Za-z0-9]{22}$/i.test(value);
+}
+
+async function getSpotifyAlbum(album) {
   const response = await fetch(
-    `${SPOTIFY_OEMBED}?url=${encodeURIComponent(track.url)}`,
+    `/api/spotify-album?url=${encodeURIComponent(album.url)}`,
+  );
+  if (!response.ok) throw new Error("Spotify album unavailable");
+  const data = await response.json();
+
+  return {
+    title: data.title || album.title,
+    artist: data.artist || album.artist,
+    artwork: data.artwork || "",
+    tracks: Array.isArray(data.tracks)
+      ? data.tracks.filter((track) => isSpotifyTrack(track.url))
+      : [],
+  };
+}
+
+async function getSpotifyFallback(album) {
+  const response = await fetch(
+    `${SPOTIFY_OEMBED}?url=${encodeURIComponent(album.url)}`,
   );
   if (!response.ok) throw new Error("Spotify metadata unavailable");
   const data = await response.json();
+
   return {
+    title: data.title || album.title,
+    artist: album.artist,
     artwork: data.thumbnail_url || "",
-    title: data.title || track.title,
+    tracks: isSpotifyTrack(album.url)
+      ? [
+          {
+            title: data.title || album.title,
+            artist: album.artist,
+            url: album.url,
+          },
+        ]
+      : [],
   };
+}
+
+async function getAlbumMetadata(album) {
+  try {
+    return await getSpotifyAlbum(album);
+  } catch {
+    return getSpotifyFallback(album);
+  }
 }
 
 async function getLastFmTrack(config) {
@@ -131,7 +171,7 @@ async function getLastFmTrack(config) {
   };
 }
 
-export function mountMusicPlayer(config, { onTrackChange } = {}) {
+export function mountMusicPlayer(config) {
   const player = document.querySelector(".mini-player");
   if (!player || !config?.enabled || !config.tracks?.length) return null;
 
@@ -142,57 +182,89 @@ export function mountMusicPlayer(config, { onTrackChange } = {}) {
   const caption = player.querySelector("[data-player-caption]");
   const captionTitle = player.querySelector("[data-player-caption-title]");
   const status = player.querySelector("[data-player-status]");
+  const previousButton = player.querySelector(
+    '[data-player-action="previous"]',
+  );
+  const nextButton = player.querySelector('[data-player-action="next"]');
+  const albumCache = new Map();
   let controller = null;
-  let currentIndex = 0;
-  let currentTitle = config.tracks[0].title;
+  let currentAlbumIndex = 0;
+  let currentSongIndex = 0;
+  let currentAlbum = {
+    ...config.tracks[0],
+    artwork: "",
+    tracks: [],
+  };
   let isPaused = true;
   let hasInteracted = false;
   let metadataRequest = 0;
 
-  const updateControlLabels = () => {
-    const track = config.tracks[currentIndex];
-    const action = isPaused ? "Play" : "Pause";
-    status.textContent = `${currentTitle} by ${track.artist}`;
-    record.setAttribute(
-      "aria-label",
-      `${action} ${currentTitle} by ${track.artist}`,
-    );
-    record.title = `${action} ${currentTitle} — ${track.artist}`;
+  const hideProfileCaption = () => {
+    const gallery = document.querySelector("[data-profile-gallery]");
+    if (gallery) delete gallery.dataset.captionVisible;
   };
 
-  const updateMetadata = async (track) => {
+  player.addEventListener("pointerdown", hideProfileCaption);
+  player.addEventListener("focusin", hideProfileCaption);
+
+  const currentSong = () => currentAlbum.tracks[currentSongIndex] || null;
+
+  const updateControlLabels = () => {
+    const song = currentSong();
+    const action = isPaused ? "Play" : "Pause";
+    const playableTitle = song?.title || currentAlbum.title;
+    const playableArtist = song?.artist || currentAlbum.artist;
+    const canSkip = Boolean(controller && currentAlbum.tracks.length > 1);
+
+    status.textContent = `${playableTitle} by ${playableArtist}`;
+    record.setAttribute(
+      "aria-label",
+      `${action} ${playableTitle} from ${currentAlbum.title}`,
+    );
+    record.title = `${action} ${playableTitle} — ${playableArtist}`;
+    previousButton.disabled = !canSkip;
+    nextButton.disabled = !canSkip;
+    previousButton.setAttribute(
+      "aria-label",
+      `Previous song in ${currentAlbum.title}`,
+    );
+    nextButton.setAttribute("aria-label", `Next song in ${currentAlbum.title}`);
+  };
+
+  const updateAlbumMetadata = async (album) => {
     const request = ++metadataRequest;
+    if (!albumCache.has(album.url)) {
+      albumCache.set(album.url, getAlbumMetadata(album));
+    }
 
     try {
-      const metadata = await getSpotifyMetadata(track);
+      const metadata = await albumCache.get(album.url);
       if (request !== metadataRequest) return;
-      if (metadata.artwork) {
-        artwork.style.backgroundImage = `url("${metadata.artwork.replaceAll('"', "%22")}")`;
+      currentAlbum = { ...album, ...metadata };
+      currentSongIndex = 0;
+      captionTitle.textContent = currentAlbum.title;
+      if (currentAlbum.artwork) {
+        artwork.style.backgroundImage = `url("${currentAlbum.artwork.replaceAll('"', "%22")}")`;
       }
-      currentTitle = metadata.title;
-      captionTitle.textContent = currentTitle;
       updateControlLabels();
     } catch {
       player.dataset.artwork = "unavailable";
     }
   };
 
-  const showTrack = (index, { play = false, notify = false } = {}) => {
-    currentIndex = (index + config.tracks.length) % config.tracks.length;
-    const track = config.tracks[currentIndex];
-    currentTitle = track.title;
-    caption.href = track.url;
-    captionTitle.textContent = currentTitle;
+  const showAlbum = (index, { play = false } = {}) => {
+    currentAlbumIndex = (index + config.tracks.length) % config.tracks.length;
+    const album = config.tracks[currentAlbumIndex];
+    currentAlbum = { ...album, artwork: "", tracks: [] };
+    currentSongIndex = 0;
+    caption.href = album.url;
+    captionTitle.textContent = album.title;
     updateControlLabels();
-    updateMetadata(track);
+    updateAlbumMetadata(album);
 
     if (controller) {
-      controller.loadEntity(track.url);
+      controller.loadEntity(album.url);
       if (play) window.setTimeout(() => controller.play(), 120);
-    }
-
-    if (notify && typeof onTrackChange === "function") {
-      onTrackChange(track.profileIndex ?? currentIndex, track, currentIndex);
     }
   };
 
@@ -203,12 +275,23 @@ export function mountMusicPlayer(config, { onTrackChange } = {}) {
     playIcon.innerHTML = paused ? icons.play : icons.pause;
   };
 
+  const changeSong = (offset) => {
+    if (!controller || currentAlbum.tracks.length < 2) return;
+    const shouldResume = !isPaused;
+    currentSongIndex =
+      (currentSongIndex + offset + currentAlbum.tracks.length) %
+      currentAlbum.tracks.length;
+    controller.loadEntity(currentSong().url);
+    updateControlLabels();
+    if (shouldResume) window.setTimeout(() => controller.play(), 120);
+  };
+
   const selectProfile = (profileIndex) => {
-    const trackIndex = config.tracks.findIndex(
-      (track) => track.profileIndex === profileIndex,
+    const albumIndex = config.tracks.findIndex(
+      (album) => album.profileIndex === profileIndex,
     );
-    if (trackIndex < 0 || trackIndex === currentIndex) return;
-    showTrack(trackIndex, { play: !isPaused });
+    if (albumIndex < 0 || albumIndex === currentAlbumIndex) return;
+    showAlbum(albumIndex, { play: !isPaused });
   };
 
   player.querySelectorAll("[data-player-action]").forEach((button) => {
@@ -219,29 +302,38 @@ export function mountMusicPlayer(config, { onTrackChange } = {}) {
       if (action === "play" && controller) {
         controller.togglePlay();
       } else if (action === "previous") {
-        showTrack(currentIndex - 1, { play: !isPaused, notify: true });
+        changeSong(-1);
       } else if (action === "next") {
-        showTrack(currentIndex + 1, { play: !isPaused, notify: true });
+        changeSong(1);
       }
     });
   });
 
-  showTrack(0);
+  showAlbum(0);
   loadSpotifyApi((api) => {
     api.createController(
       embed,
       { width: "100%", height: 152, url: config.tracks[0].url },
       (spotifyController) => {
         controller = spotifyController;
-        if (currentIndex !== 0) {
-          controller.loadEntity(config.tracks[currentIndex].url);
+        if (currentAlbumIndex !== 0) {
+          controller.loadEntity(config.tracks[currentAlbumIndex].url);
         }
         controller.addListener("ready", () => {
           const iframe = player.querySelector(".mini-player-embed iframe");
           iframe?.setAttribute("tabindex", "-1");
           iframe?.setAttribute("aria-hidden", "true");
-          player.dataset.playerState = "paused";
           record.disabled = false;
+          setPaused(true);
+        });
+        controller.addListener("playback_started", (event) => {
+          const songIndex = currentAlbum.tracks.findIndex((track) =>
+            event.data?.playingURI?.endsWith(track.url.split("/").at(-1)),
+          );
+          if (songIndex >= 0) {
+            currentSongIndex = songIndex;
+            updateControlLabels();
+          }
         });
         controller.addListener("playback_update", (event) => {
           setPaused(Boolean(event.data?.isPaused));
@@ -250,16 +342,23 @@ export function mountMusicPlayer(config, { onTrackChange } = {}) {
     );
   });
 
-  if (config.lastFmUser && config.lastFmApiKey) {
+  const hasProfileAlbums = config.tracks.some((album) =>
+    Number.isInteger(album.profileIndex),
+  );
+  if (!hasProfileAlbums && config.lastFmUser && config.lastFmApiKey) {
     const syncLastFm = async () => {
       try {
         const recent = await getLastFmTrack(config);
         if (!recent) return;
-        const matchIndex = config.tracks.findIndex((track) =>
-          trackMatches(track, recent.title, recent.artist),
+        const matchIndex = config.tracks.findIndex((item) =>
+          itemMatches(item, recent.title, recent.artist),
         );
-        if (!hasInteracted && matchIndex >= 0 && matchIndex !== currentIndex) {
-          showTrack(matchIndex, { notify: true });
+        if (
+          !hasInteracted &&
+          matchIndex >= 0 &&
+          matchIndex !== currentAlbumIndex
+        ) {
+          showAlbum(matchIndex);
         }
       } catch {
         // The manually editable Spotify queue remains available if Last.fm is offline.
@@ -270,11 +369,5 @@ export function mountMusicPlayer(config, { onTrackChange } = {}) {
     window.setInterval(syncLastFm, 30_000);
   }
 
-  return {
-    selectProfile,
-    selectTrack(index) {
-      if (index === currentIndex) return;
-      showTrack(index, { play: !isPaused, notify: true });
-    },
-  };
+  return { selectProfile };
 }
