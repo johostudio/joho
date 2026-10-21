@@ -32,6 +32,8 @@ const defaults = {
   multimediaPreviewTitle: "photography archive",
   multimediaPreviewUrl: "https://snoopystudio.framer.website/",
   multimediaPreviewLabel: "snoopystudio.framer.website",
+  musicPlayerAccent: "#d14a00",
+  musicPlayerLabel: "now playing",
 };
 
 export { siteMarkdown };
@@ -134,6 +136,28 @@ function parseFooterItem(item) {
   return { label: link[1], href };
 }
 
+function parseMusicItem(item) {
+  const link = item.match(
+    /^\[([^\]]+)]\((https:\/\/open\.spotify\.com\/track\/[^)\s?]+)(?:\?[^)\s]*)?\)$/i,
+  );
+  if (!link) return null;
+
+  const [title, ...artistParts] = link[1].split(/\s+(?:—|–|\|)\s+/);
+  const artist = artistParts.join(" — ").trim();
+
+  return {
+    title: title.trim(),
+    artist: artist || "Spotify",
+    url: link[2],
+  };
+}
+
+function parseHexColor(value, fallback) {
+  return /^#[\da-f]{3}(?:[\da-f]{3})?$/i.test(String(value).trim())
+    ? String(value).trim()
+    : fallback;
+}
+
 export function parsePortfolioMarkdown(source) {
   const { metadata, body } = splitFrontMatter(source);
   const lines = body.split("\n");
@@ -157,11 +181,17 @@ export function parsePortfolioMarkdown(source) {
   const footerSection = rawSections.find(
     (section) => section.heading.toLowerCase() === "footer",
   );
+  const musicSection = rawSections.find(
+    (section) => section.heading.toLowerCase() === "music player",
+  );
   const footerLinks = footerSection
     ? parseList(footerSection.lines).map(parseFooterItem).filter(Boolean)
     : [];
+  const musicTracks = musicSection
+    ? parseList(musicSection.lines).map(parseMusicItem).filter(Boolean)
+    : [];
   const sections = rawSections
-    .filter((section) => section !== footerSection)
+    .filter((section) => section !== footerSection && section !== musicSection)
     .map((section) => ({
       heading: section.heading,
       items: parseList(section.lines),
@@ -213,6 +243,18 @@ export function parsePortfolioMarkdown(source) {
             metadata.multimediaPreviewLabel || defaults.multimediaPreviewLabel,
         },
       ],
+    },
+    musicPlayer: {
+      enabled:
+        metadata.musicPlayerEnabled !== "false" && musicTracks.length > 0,
+      accent: parseHexColor(
+        metadata.musicPlayerAccent,
+        defaults.musicPlayerAccent,
+      ),
+      label: metadata.musicPlayerLabel || defaults.musicPlayerLabel,
+      lastFmUser: metadata.musicLastFmUser || "",
+      lastFmApiKey: metadata.musicLastFmApiKey || "",
+      tracks: musicTracks,
     },
     footerLinks,
   };

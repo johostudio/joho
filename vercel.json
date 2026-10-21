@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; connect-src 'self' https://api.github.com; frame-src 'self' https://joho.studio https://snoopystudio.framer.website; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; connect-src 'self' https://api.github.com https://open.spotify.com https://ws.audioscrobbler.com; frame-src 'self' https://joho.studio https://snoopystudio.framer.website https://open.spotify.com; img-src 'self' data: https://image-cdn-fa.spotifycdn.com https://image-cdn-ak.spotifycdn.com https://lastfm-img2.akamaized.net https://lastfm-img.freetls.fastly.net; style-src 'self'; font-src 'self'; script-src 'self' https://open.spotify.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         },
         {
           "key": "Referrer-Policy",

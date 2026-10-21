@@ -15,6 +15,10 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
   navigation remains in `src/content.js`.
 - The home photo's hover caption is the `profileImageCaption` field in
   `content/site.md`.
+- The mini player is also edited in `content/site.md`. Add Spotify track links
+  under `## music player` using `- [song — artist](spotify-track-url)`. Set
+  `musicLastFmUser` and `musicLastFmApiKey` in the front matter to let Last.fm
+  select the matching Spotify track when it is playing.
 - The `life nodes` tab in `/edit` adds, removes, links, and connects thoughts without
   touching code. Each node has a short hover preview and a Markdown-style page
   that opens when the node is clicked. Its data is stored in

@@ -1,6 +1,7 @@
 import "@fontsource-variable/inter";
 import { siteContent } from "./content.js";
 import { renderPortfolio } from "./view.js";
+import { mountMusicPlayer } from "./music-player.js";
 import "./styles.css";
 
 const app = document.querySelector("#app");
@@ -74,6 +75,10 @@ if (currentPath === "/edit") {
   document.title = `${currentPage.label} — ${siteContent.siteName}`;
   metaDescription?.setAttribute("content", siteContent.description);
   app.innerHTML = renderPortfolio(siteContent, currentPage);
+}
+
+if (currentPath !== "/edit") {
+  mountMusicPlayer(siteContent.musicPlayer);
 }
 
 enablePageTransitions();

@@ -15,6 +15,10 @@ multimediaPreviewTitle: photography archive
 multimediaPreviewUrl: https://snoopystudio.framer.website/
 multimediaPreviewLabel: snoopystudio.framer.website
 lifePage: to be developed and designed soon :)
+musicPlayerAccent: #d14a00
+musicPlayerLabel: now playing
+musicLastFmUser:
+musicLastFmApiKey:
 ---
 
 "failure runs through life, this is life"
@@ -46,6 +50,14 @@ lifePage: to be developed and designed soon :)
 - continue freelance design+media work with my studio, [johostudio](https://joho.studio/), make cool [minifilms](https://www.youtube.com/watch?v=xDQcMHPIASg)
 - concert maxxing with [photo](https://snoopystudio.framer.website/) passes, keeping myself busy (next show: tbd!)
 - working on misc. projects to keep me happy, like [this](https://moments-xi-five.vercel.app/), [this](https://stormhacks2026-swart.vercel.app), maybe [this too](https://snoopytools.vercel.app/), something [like this](https://verdant-delta-ashen.vercel.app/)? lots more coming as well :)
+
+## music player
+
+- [twenty something — Luke Chiang](https://open.spotify.com/track/10pa4Scz1Q7ctkUYGqniQs)
+- [me & u — Luke Chiang, HILLARI](https://open.spotify.com/track/5R9eJdGi0hzYRajiqyq62h)
+- [tailspin — Luke Chiang, Bren Joy](https://open.spotify.com/track/4vf4VPmnj7b0A0e66O5rCd)
+- [heaven — Luke Chiang](https://open.spotify.com/track/1ociAMTV0GhCobIZ8o3eof)
+- [what can i do? — Luke Chiang, Jesse Barrera, Albert Posis](https://open.spotify.com/track/3ds8Ve7yEkWcwHSnVlmqHV)
 
 ## footer
 
