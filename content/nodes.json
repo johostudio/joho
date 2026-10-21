@@ -73,45 +73,15 @@
     }
   ],
   "edges": [
-    [
-      "engineering",
-      "design"
-    ],
-    [
-      "design",
-      "multimedia"
-    ],
-    [
-      "multimedia",
-      "life"
-    ],
-    [
-      "life",
-      "engineering"
-    ],
-    [
-      "engineering",
-      "multimedia"
-    ],
-    [
-      "design",
-      "life"
-    ],
-    [
-      "thought-5",
-      "design"
-    ],
-    [
-      "thought-6",
-      "life"
-    ],
-    [
-      "thought-7",
-      "life"
-    ],
-    [
-      "thought-5",
-      "multimedia"
-    ]
+    ["engineering", "design"],
+    ["design", "multimedia"],
+    ["multimedia", "life"],
+    ["life", "engineering"],
+    ["engineering", "multimedia"],
+    ["design", "life"],
+    ["thought-5", "design"],
+    ["thought-6", "life"],
+    ["thought-7", "life"],
+    ["thought-5", "multimedia"]
   ]
 }
