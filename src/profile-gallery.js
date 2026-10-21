@@ -10,6 +10,7 @@ export function mountProfileGallery(images = []) {
   const reducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
+  const hasHover = window.matchMedia("(hover: hover)").matches;
   let currentIndex = 0;
 
   const preloadNext = () => {
@@ -18,7 +19,7 @@ export function mountProfileGallery(images = []) {
     preload.src = next.src;
   };
 
-  const showImage = (index, { reveal = true } = {}) => {
+  const showImage = (index, { reveal = false } = {}) => {
     const next = images[index];
     currentIndex = index;
     image.src = next.src;
@@ -30,8 +31,10 @@ export function mountProfileGallery(images = []) {
       "aria-label",
       `Show next photo. Current photo: ${next.alt}`,
     );
-    if (reveal) {
+    if (reveal && !hasHover) {
       gallery.dataset.captionVisible = "true";
+    } else {
+      delete gallery.dataset.captionVisible;
     }
     preloadNext();
   };
@@ -41,13 +44,13 @@ export function mountProfileGallery(images = []) {
     const nextIndex = (currentIndex + 1) % images.length;
 
     if (reducedMotion) {
-      showImage(nextIndex);
+      showImage(nextIndex, { reveal: true });
       return;
     }
 
     gallery.dataset.switching = "true";
     window.setTimeout(() => {
-      showImage(nextIndex);
+      showImage(nextIndex, { reveal: true });
       delete gallery.dataset.switching;
     }, 110);
   });

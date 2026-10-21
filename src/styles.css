@@ -231,13 +231,21 @@ h1 {
 }
 
 .profile-figure:hover figcaption,
-.profile-figure:focus-within figcaption,
+.profile-photo-button:focus-visible + figcaption,
 .profile-figure[data-caption-visible="true"] figcaption {
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
   transition-delay: 0s;
   pointer-events: auto;
+}
+
+.profile-figure[data-switching="true"] figcaption {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: none;
+  pointer-events: none;
 }
 
 .content-section {
