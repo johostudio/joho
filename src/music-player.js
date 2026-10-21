@@ -1,4 +1,4 @@
-import { escapeHtml, safeHref } from "./content.js";
+import { escapeHtml } from "./content.js";
 import "./music-player.css";
 
 const SPOTIFY_API_SRC = "https://open.spotify.com/embed/iframe-api/v1";
@@ -8,7 +8,7 @@ const LASTFM_API = "https://ws.audioscrobbler.com/2.0/";
 const icons = {
   previous:
     '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 4.5v11M15 5.2 7.4 10l7.6 4.8V5.2Z"/></svg>',
-  play: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4.8 8 5.2-8 5.2V4.8Z"/></svg>',
+  play: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.2 5 7.4 5-7.4 5V5Z"/></svg>',
   pause:
     '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 5h2.4v10H6.5zm4.6 0h2.4v10h-2.4z"/></svg>',
   next: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15 4.5v11M5 5.2l7.6 4.8L5 14.8V5.2Z"/></svg>',
@@ -34,43 +34,39 @@ function trackMatches(track, title, artist) {
   );
 }
 
-function renderPlayer(config) {
+export function renderMusicPlayer(config) {
+  if (!config?.enabled || !config.tracks?.length) return "";
   const firstTrack = config.tracks[0];
-  const spotifyUrl = escapeHtml(safeHref(firstTrack.url));
 
   return `
-    <aside class="mini-player" aria-label="Mini music player" data-player-state="loading">
-      <div class="mini-player-backdrop" aria-hidden="true"></div>
-      <div class="mini-player-topline">
-        <span class="mini-player-source" data-player-source>${escapeHtml(config.label)}</span>
-        <button class="mini-player-collapse" type="button" aria-label="Minimize music player" aria-expanded="true">−</button>
-      </div>
+    <div class="mini-player" aria-label="Mini music player" data-player-state="loading">
+      <button class="mini-player-skip" type="button" data-player-action="previous" aria-label="Previous track">
+        ${icons.previous}
+      </button>
 
-      <div class="mini-player-stage">
-        <button class="mini-player-control" type="button" data-player-action="previous" aria-label="Previous track">
-          ${icons.previous}
-        </button>
-        <a class="mini-player-cover-link" href="${spotifyUrl}" target="_blank" rel="noreferrer" aria-label="Open this track on Spotify">
-          <span class="mini-player-cover" aria-hidden="true"></span>
-        </a>
-        <button class="mini-player-control" type="button" data-player-action="next" aria-label="Next track">
-          ${icons.next}
-        </button>
-        <button class="mini-player-play" type="button" data-player-action="play" aria-label="Play on Spotify" disabled>
-          <span data-player-icon>${icons.play}</span>
-        </button>
-      </div>
+      <button
+        class="mini-player-record"
+        type="button"
+        data-player-action="play"
+        aria-label="Play ${escapeHtml(firstTrack.title)} by ${escapeHtml(firstTrack.artist)}"
+        title="Play ${escapeHtml(firstTrack.title)} — ${escapeHtml(firstTrack.artist)}"
+        disabled
+      >
+        <span class="mini-player-record-art" aria-hidden="true"></span>
+        <span class="mini-player-record-center" data-player-icon>${icons.play}</span>
+      </button>
 
-      <div class="mini-player-copy" aria-live="polite">
-        <span class="mini-player-note" aria-hidden="true">♪</span>
-        <span class="mini-player-track" data-player-title>${escapeHtml(firstTrack.title)}</span>
-        <span class="mini-player-artist" data-player-artist>${escapeHtml(firstTrack.artist)}</span>
-      </div>
-      <div class="mini-player-progress" aria-hidden="true"><span data-player-progress></span></div>
+      <button class="mini-player-skip" type="button" data-player-action="next" aria-label="Next track">
+        ${icons.next}
+      </button>
+
+      <span class="mini-player-status" data-player-status aria-live="polite">
+        ${escapeHtml(firstTrack.title)} by ${escapeHtml(firstTrack.artist)}
+      </span>
       <div class="mini-player-embed" aria-hidden="true" inert>
         <div data-spotify-controller></div>
       </div>
-    </aside>
+    </div>
   `;
 }
 
@@ -122,28 +118,18 @@ async function getLastFmTrack(config) {
   return {
     title: track.name || "",
     artist: track.artist?.["#text"] || track.artist?.name || "",
-    nowPlaying: track["@attr"]?.nowplaying === "true",
-    url: track.url || `https://www.last.fm/user/${config.lastFmUser}`,
   };
 }
 
 export function mountMusicPlayer(config) {
-  if (!config?.enabled || !config.tracks?.length) return;
-
-  document.body.insertAdjacentHTML("beforeend", renderPlayer(config));
   const player = document.querySelector(".mini-player");
-  player.style.setProperty("--player-accent", config.accent);
+  if (!player || !config?.enabled || !config.tracks?.length) return;
+
   const embed = player.querySelector("[data-spotify-controller]");
-  const title = player.querySelector("[data-player-title]");
-  const artist = player.querySelector("[data-player-artist]");
-  const source = player.querySelector("[data-player-source]");
-  const cover = player.querySelector(".mini-player-cover");
-  const coverLink = player.querySelector(".mini-player-cover-link");
-  const backdrop = player.querySelector(".mini-player-backdrop");
-  const playButton = player.querySelector('[data-player-action="play"]');
+  const record = player.querySelector(".mini-player-record");
+  const artwork = player.querySelector(".mini-player-record-art");
   const playIcon = player.querySelector("[data-player-icon]");
-  const progress = player.querySelector("[data-player-progress]");
-  const collapse = player.querySelector(".mini-player-collapse");
+  const status = player.querySelector("[data-player-status]");
   let controller = null;
   let currentIndex = 0;
   let isPaused = true;
@@ -151,11 +137,9 @@ export function mountMusicPlayer(config) {
 
   const updateArtwork = async (track) => {
     try {
-      const artwork = await getSpotifyArtwork(track);
-      if (!artwork) return;
-      const image = `url("${artwork.replaceAll('"', "%22")}")`;
-      cover.style.backgroundImage = image;
-      backdrop.style.backgroundImage = image;
+      const imageUrl = await getSpotifyArtwork(track);
+      if (!imageUrl) return;
+      artwork.style.backgroundImage = `url("${imageUrl.replaceAll('"', "%22")}")`;
     } catch {
       player.dataset.artwork = "unavailable";
     }
@@ -164,14 +148,13 @@ export function mountMusicPlayer(config) {
   const showTrack = (index, { play = false } = {}) => {
     currentIndex = (index + config.tracks.length) % config.tracks.length;
     const track = config.tracks[currentIndex];
-    title.textContent = track.title;
-    artist.textContent = track.artist;
-    coverLink.href = track.url;
-    coverLink.setAttribute(
+    const action = isPaused ? "Play" : "Pause";
+    status.textContent = `${track.title} by ${track.artist}`;
+    record.setAttribute(
       "aria-label",
-      `Open ${track.title} by ${track.artist} on Spotify`,
+      `${action} ${track.title} by ${track.artist}`,
     );
-    progress.style.width = "0%";
+    record.title = `${action} ${track.title} — ${track.artist}`;
     updateArtwork(track);
 
     if (controller) {
@@ -182,8 +165,14 @@ export function mountMusicPlayer(config) {
 
   const setPaused = (paused) => {
     isPaused = paused;
+    const track = config.tracks[currentIndex];
+    const action = paused ? "Play" : "Pause";
     player.dataset.playerState = paused ? "paused" : "playing";
-    playButton.setAttribute("aria-label", paused ? "Play on Spotify" : "Pause");
+    record.setAttribute(
+      "aria-label",
+      `${action} ${track.title} by ${track.artist}`,
+    );
+    record.title = `${action} ${track.title} — ${track.artist}`;
     playIcon.innerHTML = paused ? icons.play : icons.pause;
   };
 
@@ -202,16 +191,6 @@ export function mountMusicPlayer(config) {
     });
   });
 
-  collapse.addEventListener("click", () => {
-    const collapsed = player.toggleAttribute("data-collapsed");
-    collapse.textContent = collapsed ? "+" : "−";
-    collapse.setAttribute("aria-expanded", String(!collapsed));
-    collapse.setAttribute(
-      "aria-label",
-      collapsed ? "Expand music player" : "Minimize music player",
-    );
-  });
-
   showTrack(0);
   loadSpotifyApi((api) => {
     api.createController(
@@ -227,15 +206,10 @@ export function mountMusicPlayer(config) {
           iframe?.setAttribute("tabindex", "-1");
           iframe?.setAttribute("aria-hidden", "true");
           player.dataset.playerState = "paused";
-          playButton.disabled = false;
+          record.disabled = false;
         });
         controller.addListener("playback_update", (event) => {
-          const playback = event.data || {};
-          setPaused(Boolean(playback.isPaused));
-          const percentage = playback.duration
-            ? Math.min(100, (playback.position / playback.duration) * 100)
-            : 0;
-          progress.style.width = `${percentage}%`;
+          setPaused(Boolean(event.data?.isPaused));
         });
       },
     );
@@ -246,10 +220,6 @@ export function mountMusicPlayer(config) {
       try {
         const recent = await getLastFmTrack(config);
         if (!recent) return;
-        source.textContent = recent.nowPlaying
-          ? "last.fm · listening now"
-          : "last.fm · last played";
-        source.title = `${recent.title} — ${recent.artist}`;
         const matchIndex = config.tracks.findIndex((track) =>
           trackMatches(track, recent.title, recent.artist),
         );
@@ -257,7 +227,7 @@ export function mountMusicPlayer(config) {
           showTrack(matchIndex);
         }
       } catch {
-        source.textContent = config.label;
+        // The manually editable Spotify queue remains available if Last.fm is offline.
       }
     };
 

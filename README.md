@@ -14,7 +14,10 @@ Temporary portfolio for engineering, design, multimedia, and life updates.
 - Secondary-page messages are editable in that file's top metadata block;
   navigation remains in `src/content.js`.
 - The home photo's hover caption is the `profileImageCaption` field in
-  `content/site.md`.
+  `content/site.md`. Add more clickable photos with numbered fields such as
+  `profileImage2`, `profileImage2Alt`, `profileImage2Caption`, and
+  `profileImage2Position`. Use `profileImage2Scale` when a circular crop needs
+  more zoom.
 - The mini player is also edited in `content/site.md`. Add Spotify track links
   under `## music player` using `- [song — artist](spotify-track-url)`. Set
   `musicLastFmUser` and `musicLastFmApiKey` in the front matter to let Last.fm

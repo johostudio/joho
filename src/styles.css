@@ -132,6 +132,13 @@ a {
   margin-bottom: 48px;
 }
 
+.home-media {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 .home-intro {
   flex: 1;
   min-width: 0;
@@ -168,6 +175,23 @@ h1 {
   outline: none;
 }
 
+.profile-photo-button {
+  display: block;
+  width: var(--profile-size);
+  height: var(--profile-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  overflow: hidden;
+}
+
+.profile-photo-button:focus-visible {
+  outline: 1px solid #09090b;
+  outline-offset: 4px;
+}
+
 .profile-image {
   display: block;
   width: var(--profile-size);
@@ -175,6 +199,14 @@ h1 {
   border-radius: 50%;
   object-fit: cover;
   image-rendering: auto;
+  transform: scale(var(--profile-scale, 1));
+  transition:
+    opacity 110ms ease,
+    transform 110ms ease;
+}
+
+.profile-figure[data-switching="true"] .profile-image {
+  opacity: 0;
 }
 
 .profile-figure figcaption {
@@ -199,7 +231,8 @@ h1 {
 }
 
 .profile-figure:hover figcaption,
-.profile-figure:focus figcaption {
+.profile-figure:focus-within figcaption,
+.profile-figure[data-caption-visible="true"] figcaption {
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
@@ -316,13 +349,67 @@ footer {
   margin-top: 48px;
 }
 
-@media (max-width: 350px) {
+@media (max-width: 639px) {
   .home-header {
-    gap: 16px;
+    gap: 8px;
   }
 
   .profile-figure {
-    --profile-size: 88px;
+    --profile-size: 80px;
+  }
+
+  .home-media {
+    gap: 0;
+  }
+
+  .home-media .mini-player {
+    width: 64px;
+    height: 52px;
+    grid-template-columns: 10px 44px 10px;
+  }
+
+  .home-media .mini-player-record {
+    width: 44px;
+    height: 44px;
+  }
+
+  .home-media .mini-player-skip {
+    width: 10px;
+    padding: 0;
+  }
+}
+
+@media (max-width: 350px) {
+  .home-header {
+    gap: 8px;
+  }
+
+  h1 {
+    font-size: 34px;
+    line-height: 38px;
+  }
+
+  .profile-figure {
+    --profile-size: 72px;
+  }
+
+  .home-media {
+    gap: 0;
+  }
+
+  .home-media .mini-player {
+    width: 56px;
+    grid-template-columns: 8px 40px 8px;
+  }
+
+  .home-media .mini-player-record {
+    width: 40px;
+    height: 40px;
+  }
+
+  .home-media .mini-player-skip {
+    width: 8px;
+    padding: 0;
   }
 
   .website-preview iframe {
@@ -347,6 +434,10 @@ footer {
 
   .home-header {
     gap: 32px;
+  }
+
+  .home-media {
+    gap: 10px;
   }
 
   .profile-figure {

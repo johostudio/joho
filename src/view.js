@@ -1,4 +1,5 @@
 import { escapeHtml, renderInlineMarkdown, safeHref } from "./content.js";
+import { renderMusicPlayer } from "./music-player.js";
 
 export function renderNavigation(siteContent, currentPageId) {
   return `
@@ -64,6 +65,13 @@ function renderWebsitePreviews(previews = []) {
 }
 
 export function renderPortfolio(siteContent, currentPage) {
+  const firstProfileImage = siteContent.home.profileImages?.[0] || {
+    src: siteContent.home.profileImage,
+    alt: siteContent.home.profileImageAlt,
+    caption: siteContent.home.profileImageCaption,
+    position: "50% 50%",
+    scale: 1,
+  };
   const homeSections = siteContent.home.sections
     .map(
       (section) => `
@@ -85,14 +93,20 @@ export function renderPortfolio(siteContent, currentPage) {
         <h1>${escapeHtml(siteContent.home.title)}</h1>
         <p>${renderInlineMarkdown(siteContent.home.introduction)}</p>
       </div>
-      <figure class="profile-figure" tabindex="0">
-        <img
-          class="profile-image"
-          src="${escapeHtml(safeHref(siteContent.home.profileImage))}"
-          alt="${escapeHtml(siteContent.home.profileImageAlt)}"
-        />
-        <figcaption>${renderInlineMarkdown(siteContent.home.profileImageCaption)}</figcaption>
-      </figure>
+      <div class="home-media">
+        ${renderMusicPlayer(siteContent.musicPlayer)}
+        <figure class="profile-figure" data-profile-gallery>
+          <button class="profile-photo-button" type="button" aria-label="Show next photo">
+            <img
+              class="profile-image"
+              data-profile-image
+              src="${escapeHtml(safeHref(firstProfileImage.src))}"
+              alt="${escapeHtml(firstProfileImage.alt)}"
+            />
+          </button>
+          <figcaption data-profile-caption>${renderInlineMarkdown(firstProfileImage.caption)}</figcaption>
+        </figure>
+      </div>
     </header>
     ${homeSections}
   `;

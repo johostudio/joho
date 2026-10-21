@@ -32,8 +32,6 @@ const defaults = {
   multimediaPreviewTitle: "photography archive",
   multimediaPreviewUrl: "https://snoopystudio.framer.website/",
   multimediaPreviewLabel: "snoopystudio.framer.website",
-  musicPlayerAccent: "#d14a00",
-  musicPlayerLabel: "now playing",
 };
 
 export { siteMarkdown };
@@ -152,14 +150,48 @@ function parseMusicItem(item) {
   };
 }
 
-function parseHexColor(value, fallback) {
-  return /^#[\da-f]{3}(?:[\da-f]{3})?$/i.test(String(value).trim())
-    ? String(value).trim()
-    : fallback;
+function parseImagePosition(value = "50% 50%") {
+  const position = String(value).trim();
+  return /^(?:100|\d{1,2})%\s+(?:100|\d{1,2})%$/.test(position)
+    ? position
+    : "50% 50%";
+}
+
+function parseImageScale(value = "1") {
+  const scale = Number.parseFloat(value);
+  return Number.isFinite(scale) && scale >= 1 && scale <= 3 ? scale : 1;
+}
+
+function parseProfileImages(metadata) {
+  const images = [
+    {
+      src: safeHref(metadata.profileImage || defaults.profileImage),
+      alt: metadata.profileImageAlt || defaults.profileImageAlt,
+      caption: metadata.profileImageCaption || defaults.profileImageCaption,
+      position: parseImagePosition(metadata.profileImagePosition),
+      scale: parseImageScale(metadata.profileImageScale),
+    },
+  ];
+
+  for (let index = 2; index <= 8; index += 1) {
+    const src = metadata[`profileImage${index}`];
+    if (!src) continue;
+
+    images.push({
+      src: safeHref(src),
+      alt: metadata[`profileImage${index}Alt`] || `Profile photo ${index}`,
+      caption: metadata[`profileImage${index}Caption`] || "",
+      position: parseImagePosition(metadata[`profileImage${index}Position`]),
+      scale: parseImageScale(metadata[`profileImage${index}Scale`]),
+    });
+  }
+
+  return images;
 }
 
 export function parsePortfolioMarkdown(source) {
   const { metadata, body } = splitFrontMatter(source);
+  const profileImages = parseProfileImages(metadata);
   const lines = body.split("\n");
   const introLines = [];
   const rawSections = [];
@@ -210,6 +242,7 @@ export function parsePortfolioMarkdown(source) {
       profileImageAlt: metadata.profileImageAlt || defaults.profileImageAlt,
       profileImageCaption:
         metadata.profileImageCaption || defaults.profileImageCaption,
+      profileImages,
       sections,
     },
     pageMessages: {
@@ -247,11 +280,6 @@ export function parsePortfolioMarkdown(source) {
     musicPlayer: {
       enabled:
         metadata.musicPlayerEnabled !== "false" && musicTracks.length > 0,
-      accent: parseHexColor(
-        metadata.musicPlayerAccent,
-        defaults.musicPlayerAccent,
-      ),
-      label: metadata.musicPlayerLabel || defaults.musicPlayerLabel,
       lastFmUser: metadata.musicLastFmUser || "",
       lastFmApiKey: metadata.musicLastFmApiKey || "",
       tracks: musicTracks,
